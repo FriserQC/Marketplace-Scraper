@@ -14,18 +14,18 @@ import os
 from dotenv import load_dotenv, dotenv_values 
 load_dotenv() 
 
-UNWANTEDWORDS = [' offre', ' offer', '$', ' sale', ' vente', ' achete', 'échange', ' echange', 'vendre' 
+UNWANTED_WORDS = [' offre', ' offer', '$', ' sale', ' vente', ' achete', 'échange', ' echange', 'vendre' 
                  ' achète', ' buy', ' sell', ' price', 'prix', 'trade', 'trading', 'recherche']
 
-LISTINGDESCRIPTIONCLASSNAME = 'x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x3x7a5m x6prxxf xvq8zen xo1l8bm xzsf02u'
-LISTINGCLASSNAME = 'x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1sur9pj xkrqix3 x1lku1pv'
+LISTING_DESCRIPTION_CLASS_NAME = 'x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x3x7a5m x6prxxf xvq8zen xo1l8bm xzsf02u'
+LISTING_CLASS_NAME = 'x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1sur9pj xkrqix3 x1lku1pv'
     
-SCRIPTOPENLOCATIONMENU = 'document.getElementsByClassName("x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x1ypdohk xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1o1ewxj x3x9cwd x1e5q0jg x13rtm0m x87ps6o x1lku1pv x1a2a7pz x9f619 x3nfvp2 xdt5ytf xl56j7k x1n2onr6 xh8yej3")[1].click();'
-SCRIPTSELECTRADIUSOPTIONS = 'document.getElementsByClassName("xjyslct xjbqb8w x13fuv20 xu3j5b3 x1q0q8m5 x26u7qi x972fbf xcfux6l x1qhh985 xm0m39n x9f619 xzsf02u x78zum5 x1jchvi3 x1fcty0u x132q4wb xdj266r x11i5rnm xat24cr x1mh8g0r x1a2a7pz x9desvi x1pi30zi x1a8lsjc x1swvt13 x1n2onr6 x16tdsg8 xh8yej3 x1ja2u2z")[0].click();'
-SCRIPTSELECT20KMRADIUS = 'document.getElementsByClassName("html-div xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x6s0dn4 x78zum5 x1q0g3np x1iyjqo2 x1qughib xeuugli")[4].click();'
-SCRIPTCLOSELOCATIONMENU = 'document.getElementsByClassName("x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x1ypdohk xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1o1ewxj x3x9cwd x1e5q0jg x13rtm0m x87ps6o x1lku1pv x1a2a7pz x9f619 x3nfvp2 xdt5ytf xl56j7k x1n2onr6 xh8yej3")[6].click();'
+SCRIPT_OPEN_LOCATION_MENU = 'document.getElementsByClassName("x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x1ypdohk xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1o1ewxj x3x9cwd x1e5q0jg x13rtm0m x87ps6o x1lku1pv x1a2a7pz x9f619 x3nfvp2 xdt5ytf xl56j7k x1n2onr6 xh8yej3")[1].click();'
+SCRIPT_SELECT_RADIUS_OPTIONS = 'document.getElementsByClassName("xjyslct xjbqb8w x13fuv20 xu3j5b3 x1q0q8m5 x26u7qi x972fbf xcfux6l x1qhh985 xm0m39n x9f619 xzsf02u x78zum5 x1jchvi3 x1fcty0u x132q4wb xdj266r x11i5rnm xat24cr x1mh8g0r x1a2a7pz x9desvi x1pi30zi x1a8lsjc x1swvt13 x1n2onr6 x16tdsg8 xh8yej3 x1ja2u2z")[0].click();'
+SCRIPT_SELECT_20KM_RADIUS = 'document.getElementsByClassName("html-div xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x6s0dn4 x78zum5 x1q0g3np x1iyjqo2 x1qughib xeuugli")[4].click();'
+SCRIPT_CLOSE_LOCATION_MENU = 'document.getElementsByClassName("x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x1ypdohk xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1o1ewxj x3x9cwd x1e5q0jg x13rtm0m x87ps6o x1lku1pv x1a2a7pz x9f619 x3nfvp2 xdt5ytf xl56j7k x1n2onr6 xh8yej3")[6].click();'
 
-SCRIPTSCCROLLBOTTOMPAGE = 'window.scrollTo(0, document.body.scrollHeight);'
+SCRIPT_SCROLL_BOTTOM_PAGE = 'window.scrollTo(0, document.body.scrollHeight);'
 
 async def OpenChromeToMarketplacePage():
 
@@ -67,16 +67,16 @@ async def ChangeLocationRadius(browser):
 
     # Change location radius
     try:
-        browser.execute_script(SCRIPTOPENLOCATIONMENU)
+        browser.execute_script(SCRIPT_OPEN_LOCATION_MENU)
         await asyncio.sleep(0.3)
 
-        browser.execute_script(SCRIPTSELECTRADIUSOPTIONS)
+        browser.execute_script(SCRIPT_SELECT_RADIUS_OPTIONS)
         await asyncio.sleep(0.3)  
 
-        browser.execute_script(SCRIPTSELECT20KMRADIUS)
+        browser.execute_script(SCRIPT_SELECT_20KM_RADIUS)
         await asyncio.sleep(0.3) 
 
-        browser.execute_script(SCRIPTCLOSELOCATIONMENU)
+        browser.execute_script(SCRIPT_CLOSE_LOCATION_MENU)
         await asyncio.sleep(0.3) 
     except:
         print("Could not change location radius!")
@@ -88,7 +88,7 @@ async def ScrollBottomPage(browser):
     try:
         
         # Scroll down to the bottom of the page using JavaScript
-        browser.execute_script(SCRIPTSCCROLLBOTTOMPAGE)
+        browser.execute_script(SCRIPT_SCROLL_BOTTOM_PAGE)
         await asyncio.sleep(0.3)
 
     except Exception as e:
@@ -101,10 +101,10 @@ def ExtractListingsInformation(html):
     soup = BeautifulSoup(html, 'html.parser')
 
     # Find all link elements
-    links = soup.find_all('a', {"class": LISTINGCLASSNAME})
+    links = soup.find_all('a', {"class": LISTING_CLASS_NAME})
 
     # Only keep items where the text matches your search terms and desired location
-    listing_links = [link for link in links if not any(ext in link.text.lower() for ext in UNWANTEDWORDS)]
+    listing_links = [link for link in links if not any(ext in link.text.lower() for ext in UNWANTED_WORDS)]
 
     # Create empty list to store product data
     listing_data = []
@@ -145,6 +145,7 @@ async def GetDescriptionListings(extracted_data, browser):
     for data in extracted_data:
         url = list(data.values())[2]
         browser.get(url)
+        await asyncio.sleep(0.01)
 
         # Retrieve the HTML
         html = browser.page_source
@@ -152,9 +153,9 @@ async def GetDescriptionListings(extracted_data, browser):
         # Use BeautifulSoup to parse the HTML
         soup = BeautifulSoup(html, 'html.parser')
 
-        desc = soup.find_all('span', {"class": LISTINGDESCRIPTIONCLASSNAME})[1].text 
+        desc = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})[1].text 
 
-        if any(ext in desc.lower() for ext in UNWANTEDWORDS):
+        if any(ext in desc.lower() for ext in UNWANTED_WORDS):
             extracted_data.remove(data)
         else:
             data['description'] = desc
