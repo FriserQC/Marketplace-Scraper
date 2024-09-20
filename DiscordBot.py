@@ -41,7 +41,7 @@ class MyClient(discord.Client):
                 while (len(self.previousListings) > 80):
                     self.previousListings.pop(0)
 
-            await asyncio.sleep(60)  # task runs every 1 minutes
+            await asyncio.sleep(600)  # task runs every 1 minutes
 
 
 client = MyClient(intents=discord.Intents.default())
