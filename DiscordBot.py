@@ -1,6 +1,6 @@
 import discord
 from discord.ext import tasks
-from Scrapper import GetMessage
+from WebScraper import GetMessage
 import datetime
 import asyncio
 
@@ -31,11 +31,13 @@ class MyClient(discord.Client):
         channel = client.get_channel(CHANNEL_ID)  # channel ID goes here
         while not self.is_closed():
             # sends every message
-            messages = await GetMessage()
-            for message in messages:
-                if message not in self.previousListings:
+            messages = await GetMessage(self.previousListings)
+            for infos in messages:
+                url = infos[2]
+                if url not in self.previousListings:
+                    message = (f'Title: {infos[0].strip()}\nLocation: {infos[1].strip()}\nURL: {url}\n\n')
                     await channel.send(message)
-                    self.previousListings.append(message)
+                    self.previousListings.append(url)
 
             print("number of previous listings : " + str(len(self.previousListings)))
 

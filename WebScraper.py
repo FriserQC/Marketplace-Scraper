@@ -95,7 +95,7 @@ async def ScrollBottomPage(browser):
         print(f"An error occurred: {e}")
         pass
 
-def ExtractListingsInformation(html):
+def ExtractListingsInformation(html, previousListings):
 
     # Use BeautifulSoup to parse the HTML
     soup = BeautifulSoup(html, 'html.parser')
@@ -128,14 +128,10 @@ def ExtractListingsInformation(html):
         # Extract location
         location = lines[-1]
 
-        # Add extracted data to a list of dictionaries
-        extracted_data.append({
-            'title': title,
-            'location': location,
-            #'image': item['image'],
-            'url': "https://www.facebook.com" + re.sub(r'\?.*', '', item['url'])
-            
-        })
+        url = "https://www.facebook.com" + re.sub(r'\?.*', '', item['url'])
+
+        if not any(listingsUrl in url for listingsUrl in previousListings):
+            extracted_data.append([title, location, url])
 
     return extracted_data
 
@@ -143,7 +139,7 @@ async def GetDescriptionListings(extracted_data, browser):
 
     # get description listing
     for data in extracted_data:
-        url = list(data.values())[2]
+        url = data[2]
         browser.get(url)
         await asyncio.sleep(0.01)
 
@@ -158,29 +154,13 @@ async def GetDescriptionListings(extracted_data, browser):
         if any(ext in desc.lower() for ext in UNWANTED_WORDS):
             extracted_data.remove(data)
         else:
-            data['description'] = desc
+            data.append(desc)
 
     browser.close()
 
     return extracted_data
 
-def CreateMessage(extracted_data):
-
-    # Convert extracted data into a Pandas Dataframe
-    items_df = pd.DataFrame(extracted_data)
-
-    # Create an empty message
-    message = []
-
-    # Iterate over each row in the DataFrame
-    for index, row in items_df.iterrows():
-
-        # Append the title, price, and URL of each item to the message string
-        message.append(f'Title: {row['title'].strip()}\nLocation: {row['location'].strip()}\nURL: {row['url']}\n\n')
-    
-    return message
-
-async def GetMessage() :
+async def GetMessage(previousListings) :
     browser = await OpenChromeToMarketplacePage()
 
     await CloseLogInPopup(browser)
@@ -189,10 +169,10 @@ async def GetMessage() :
     
     html = browser.page_source
 
-    extracted_data = ExtractListingsInformation(html)
+    extracted_data = ExtractListingsInformation(html, previousListings)
 
     extracted_data = await GetDescriptionListings(extracted_data, browser)
 
-    return CreateMessage(extracted_data)
+    return extracted_data
 
 
