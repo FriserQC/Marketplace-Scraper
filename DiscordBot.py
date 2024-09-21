@@ -10,6 +10,7 @@ load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 CHANNEL_ID = (int)(os.getenv("CHANNEL_ID"))
+MAX_NUMBER_OF_PREVIOUS_LISTINGS = 100
 
 class MyClient(discord.Client):
     previousListings = []
@@ -36,12 +37,14 @@ class MyClient(discord.Client):
                     await channel.send(message)
                     self.previousListings.append(message)
 
+            print("number of previous listings : " + str(len(self.previousListings)))
+
             # clear previous data 
-            if len(self.previousListings) > 80:
-                while (len(self.previousListings) > 80):
+            if len(self.previousListings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS:
+                while (len(self.previousListings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS):
                     self.previousListings.pop(0)
 
-            await asyncio.sleep(600)  # task runs every 1 minutes
+            await asyncio.sleep(600)  # task runs every 10 minutes
 
 
 client = MyClient(intents=discord.Intents.default())
