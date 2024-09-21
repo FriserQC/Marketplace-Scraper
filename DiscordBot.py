@@ -1,7 +1,6 @@
 import discord
 from discord.ext import tasks
 from WebScraper import GetMessage
-import datetime
 import asyncio
 
 import os
@@ -10,7 +9,7 @@ load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 CHANNEL_ID = (int)(os.getenv("CHANNEL_ID"))
-MAX_NUMBER_OF_PREVIOUS_LISTINGS = 100
+MAX_NUMBER_OF_PREVIOUS_LISTINGS = 300
 
 class MyClient(discord.Client):
     previousListings = []
