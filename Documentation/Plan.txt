@@ -1,5 +1,7 @@
 TODO : 
 - Checks if i could be interested with ai or smt (outdoors, tools, computers, etc.)
+- Create install executable that auto install requirements and runs in background
+- Complete Readme.md
 
 
 Plan :
