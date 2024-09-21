@@ -66,16 +66,16 @@ async def ChangeLocationRadius(browser):
     # Change location radius
     try:
         browser.execute_script(SCRIPT_OPEN_LOCATION_MENU)
-        await asyncio.sleep(0.3)
+        await asyncio.sleep(1) 
 
         browser.execute_script(SCRIPT_SELECT_RADIUS_OPTIONS)
-        await asyncio.sleep(0.3)  
+        await asyncio.sleep(1) 
 
         browser.execute_script(SCRIPT_SELECT_20KM_RADIUS)
-        await asyncio.sleep(0.3) 
+        await asyncio.sleep(1) 
 
         browser.execute_script(SCRIPT_CLOSE_LOCATION_MENU)
-        await asyncio.sleep(0.3) 
+        await asyncio.sleep(1) 
     except:
         print("Could not change location radius!")
         pass
