@@ -1,7 +1,8 @@
 TODO : 
-- Checks if i could be interested with ai or smt (outdoors, tools, computers, etc.)
-- Create install executable that auto install requirements and runs in background
+- Check why not always filtering in description
 - Complete Readme.md
+- Create install executable that auto install requirements and runs in background
+- Checks if i could be interested with ai or smt (outdoors, tools, computers, etc.)
 
 
 Plan :

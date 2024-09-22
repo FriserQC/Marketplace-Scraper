@@ -7,6 +7,7 @@ import os
 from bs4 import BeautifulSoup
 import re
 import asyncio
+from DataFiltering import ExtractListingsInformation
 
 import os
 from dotenv import load_dotenv, dotenv_values 
@@ -25,7 +26,7 @@ SCRIPT_CLOSE_LOCATION_MENU = 'document.getElementsByClassName("x1i10hfl xjbqb8w 
 
 SCRIPT_SCROLL_BOTTOM_PAGE = 'window.scrollTo(0, document.body.scrollHeight);'
 
-async def OpenChromeToMarketplacePage():
+async def OpenChromeToMarketplaceFreePage():
 
     chrome_install = ChromeDriverManager().install()
 
@@ -93,51 +94,11 @@ async def ScrollBottomPage(browser):
         print(f"An error occurred: {e}")
         pass
 
-def ExtractListingsInformation(html, previousListings):
-
-    # Use BeautifulSoup to parse the HTML
-    soup = BeautifulSoup(html, 'html.parser')
-
-    # Find all link elements
-    links = soup.find_all('a', {"class": LISTING_CLASS_NAME})
-
-    # Only keep items where the text matches your search terms and desired location
-    listing_links = [link for link in links if not any(ext in link.text.lower() for ext in UNWANTED_WORDS)]
-
-    # Create empty list to store product data
-    listing_data = []
-
-    # Store the items url and text into a list of dictionaries
-    for listing_link in listing_links:
-        url = listing_link.get('href')
-        text = '\n'.join(listing_link.stripped_strings)
-        #image = listing_link.find('img')["src"]
-        listing_data.append({'text': text, 'url': url})
-
-    # Create an empty list to store product data
-    extracted_data = []
-
-    for item in listing_data:
-        lines = item['text'].split('\n')
-
-        # Extract title
-        title = lines[-2]
-
-        # Extract location
-        location = lines[-1]
-
-        url = "https://www.facebook.com" + re.sub(r'\?.*', '', item['url'])
-
-        if not any(listingsUrl in url for listingsUrl in previousListings):
-            extracted_data.append([title, location, url])
-
-    return extracted_data
-
-async def GetDescriptionListings(extracted_data, browser):
+async def ExtractDescriptionListings(listings, browser):
 
     # get description listing
-    for data in extracted_data:
-        url = data[2]
+    for listing in listings:
+        url = listing[2]
         browser.get(url)
         await asyncio.sleep(0.01)
 
@@ -147,30 +108,33 @@ async def GetDescriptionListings(extracted_data, browser):
         # Use BeautifulSoup to parse the HTML
         soup = BeautifulSoup(html, 'html.parser')
 
-        desc = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})[1].text 
+        description = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})[1].text.lower().replace('\n', ' ').strip()
 
-        if any(ext in desc.lower() for ext in UNWANTED_WORDS):
-            extracted_data.remove(data)
+        # remove listings that are not free
+        if any(ext in description for ext in UNWANTED_WORDS):
+            listings.remove(listing)
         else:
-            data.append(desc)
+            listing.append(description)
 
     browser.close()
 
-    return extracted_data
+    return listings
 
-async def GetMessage(previousListings) :
-    browser = await OpenChromeToMarketplacePage()
+async def ExtractListings(previousListings) :
+    browser = await OpenChromeToMarketplaceFreePage()
 
     await CloseLogInPopup(browser)
     await ChangeLocationRadius(browser)
     await ScrollBottomPage(browser)
     
     html = browser.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    links = soup.find_all('a', {"class": LISTING_CLASS_NAME})
 
-    extracted_data = ExtractListingsInformation(html, previousListings)
+    listings = ExtractListingsInformation(links, previousListings)
 
-    extracted_data = await GetDescriptionListings(extracted_data, browser)
+    listings = await ExtractDescriptionListings(listings, browser)
 
-    return extracted_data
+    return listings
 
 
