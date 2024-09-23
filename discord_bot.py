@@ -2,6 +2,7 @@ import discord
 from discord.ext import tasks
 from web_scraper import extract_listings
 import asyncio
+import datetime
 
 import os
 from dotenv import load_dotenv, dotenv_values 
@@ -29,6 +30,7 @@ class MyClient(discord.Client):
         await self.wait_until_ready()
         channel = client.get_channel(CHANNEL_ID)  # channel ID goes here
         while not self.is_closed():
+            print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
             # sends every message
             listings = await extract_listings(self.previousListings)
             for listing in listings:
@@ -44,6 +46,8 @@ class MyClient(discord.Client):
             if len(self.previousListings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS:
                 while (len(self.previousListings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS):
                     self.previousListings.pop(0)
+
+            print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
 
             await asyncio.sleep(600)  # task runs every 10 minutes
 
