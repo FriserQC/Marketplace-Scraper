@@ -51,6 +51,7 @@ async def close_log_in_popup(browser):
 
     # Locate the button for the login pop-up with aria-label="Close"
     try:
+        await asyncio.sleep(1)
         close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
         close_button.click()
 
