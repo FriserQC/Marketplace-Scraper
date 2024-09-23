@@ -7,14 +7,11 @@ import os
 from bs4 import BeautifulSoup
 import re
 import asyncio
-from DataFiltering import ExtractListingsInformation
+from data_filtering import extract_listings_information, is_unwanted_string
 
 import os
 from dotenv import load_dotenv, dotenv_values 
 load_dotenv() 
-
-UNWANTED_WORDS = [' offre', ' offer', '$', ' sale', ' vente', ' achete', 'échange', ' echange', 'vendre' 
-                 ' achète', ' buy', ' sell', ' price', 'prix', 'trade', 'trading', 'recherche']
 
 LISTING_DESCRIPTION_CLASS_NAME = 'x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x3x7a5m x6prxxf xvq8zen xo1l8bm xzsf02u'
 LISTING_CLASS_NAME = 'x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1sur9pj xkrqix3 x1lku1pv'
@@ -26,7 +23,7 @@ SCRIPT_CLOSE_LOCATION_MENU = 'document.getElementsByClassName("x1i10hfl xjbqb8w 
 
 SCRIPT_SCROLL_BOTTOM_PAGE = 'window.scrollTo(0, document.body.scrollHeight);'
 
-async def OpenChromeToMarketplaceFreePage():
+async def open_chrome_to_marketplace_free_items_page():
 
     chrome_install = ChromeDriverManager().install()
 
@@ -50,19 +47,18 @@ async def OpenChromeToMarketplaceFreePage():
 
     return browser
 
-async def CloseLogInPopup(browser):
+async def close_log_in_popup(browser):
 
     # Locate the button for the login pop-up with aria-label="Close"
     try:
         close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
         close_button.click()
-        print("Close button clicked!")
-        
-    except:
-        print("Could not find or click the close button!")
+
+    except Exception as e:
+        print(f"Could not find or click the close button! Error : {e}")
         pass
 
-async def ChangeLocationRadius(browser):
+async def change_location_radius(browser):
 
     # Change location radius
     try:
@@ -77,11 +73,12 @@ async def ChangeLocationRadius(browser):
 
         browser.execute_script(SCRIPT_CLOSE_LOCATION_MENU)
         await asyncio.sleep(1) 
-    except:
-        print("Could not change location radius!")
+
+    except Exception as e:
+        print(f"Could not change location radius! Error : {e}")
         pass
 
-async def ScrollBottomPage(browser):
+async def scroll_bottom_page(browser):
 
     #Scroll down to load first two listings sections
     try:
@@ -94,7 +91,7 @@ async def ScrollBottomPage(browser):
         print(f"An error occurred: {e}")
         pass
 
-async def ExtractDescriptionListings(listings, browser):
+async def extract_description_listings(listings, browser):
 
     # get description listing
     for listing in listings:
@@ -108,10 +105,10 @@ async def ExtractDescriptionListings(listings, browser):
         # Use BeautifulSoup to parse the HTML
         soup = BeautifulSoup(html, 'html.parser')
 
-        description = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})[1].text.lower().replace('\n', ' ').strip()
+        description = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})[1].text
 
         # remove listings that are not free
-        if any(ext in description for ext in UNWANTED_WORDS):
+        if is_unwanted_string(description):
             listings.remove(listing)
         else:
             listing.append(description)
@@ -120,20 +117,20 @@ async def ExtractDescriptionListings(listings, browser):
 
     return listings
 
-async def ExtractListings(previousListings) :
-    browser = await OpenChromeToMarketplaceFreePage()
+async def extract_listings(previousListings) :
+    browser = await open_chrome_to_marketplace_free_items_page()
 
-    await CloseLogInPopup(browser)
-    await ChangeLocationRadius(browser)
-    await ScrollBottomPage(browser)
+    await close_log_in_popup(browser)
+    await change_location_radius(browser)
+    await scroll_bottom_page(browser)
     
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     links = soup.find_all('a', {"class": LISTING_CLASS_NAME})
 
-    listings = ExtractListingsInformation(links, previousListings)
+    listings = extract_listings_information(links, previousListings)
 
-    listings = await ExtractDescriptionListings(listings, browser)
+    listings = await extract_description_listings(listings, browser)
 
     return listings
 

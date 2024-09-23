@@ -1,6 +1,6 @@
 import discord
 from discord.ext import tasks
-from WebScraper import ExtractListings
+from web_scraper import extract_listings
 import asyncio
 
 import os
@@ -30,7 +30,7 @@ class MyClient(discord.Client):
         channel = client.get_channel(CHANNEL_ID)  # channel ID goes here
         while not self.is_closed():
             # sends every message
-            listings = await ExtractListings(self.previousListings)
+            listings = await extract_listings(self.previousListings)
             for listing in listings:
                 url = listing[2]
                 if url not in self.previousListings:
