@@ -1,5 +1,5 @@
 TODO : 
-- Check why not always filtering in description
+- Check if description is too long and click see more 
 - Complete Readme.md
 - Create install executable that auto install requirements and runs in background
 - Checks if i could be interested with ai or smt (outdoors, tools, computers, etc.)

@@ -6,6 +6,7 @@ UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
                   'échange', 'echange', 'échanger', 'echanger', 'trade', 'trading', 
                   'vendre', 'vente', 'sell', 'selling', 
                   'price', 'prices', 'prix', 
+                  'cash',
                   'recherche']
 
 
