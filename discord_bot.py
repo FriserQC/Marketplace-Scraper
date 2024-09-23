@@ -47,7 +47,7 @@ class MyClient(discord.Client):
                 while (len(self.previousListings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS):
                     self.previousListings.pop(0)
 
-            print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
+            print("End : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
 
             await asyncio.sleep(600)  # task runs every 10 minutes
 
