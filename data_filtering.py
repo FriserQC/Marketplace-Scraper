@@ -1,10 +1,10 @@
 import re
 
 UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
-                  'sale', 'vente',
+                  'sale', 'sales', 'vente', 'ventes',
                   'achete', 'achète', 'achetes', 'achètes', 'acheter', 'buy', 'buying',
-                  'échange', 'echange', 'échanger', 'echanger', 'trade', 'trading', 
-                  'vendre', 'vente', 'sell', 'selling', 
+                  'échange', 'echange', 'échanger', 'echanger', 'trade', 'trades', 'trading', 
+                  'vendre', 'sell', 'selling', 
                   'price', 'prices', 'prix', 
                   'cash',
                   'recherche']
@@ -17,7 +17,6 @@ def extract_listings_information(links, previousListings):
 
     listing_data = []
 
-    # Store the items url and text into a list of dictionaries
     for listing_link in listing_links:
         url = listing_link.get('href')
         text = '\n'.join(listing_link.stripped_strings)

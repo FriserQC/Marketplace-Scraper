@@ -28,9 +28,10 @@ class MyClient(discord.Client):
 
     async def my_background_task(self):
         await self.wait_until_ready()
-        channel = client.get_channel(CHANNEL_ID)  # channel ID goes here
+        channel = client.get_channel(CHANNEL_ID)
         while not self.is_closed():
             print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
+            
             # sends every message
             listings = await extract_listings(self.previousListings)
             for listing in listings:

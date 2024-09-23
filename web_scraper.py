@@ -32,6 +32,7 @@ async def open_chrome_to_marketplace_free_items_page():
 
     options = webdriver.ChromeOptions() 
     options.add_argument("start-maximized")
+    
     # to supress the error messages/logs
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
@@ -49,7 +50,6 @@ async def open_chrome_to_marketplace_free_items_page():
 
 async def close_log_in_popup(browser):
 
-    # Locate the button for the login pop-up with aria-label="Close"
     try:
         await asyncio.sleep(1)
         close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
@@ -61,7 +61,6 @@ async def close_log_in_popup(browser):
 
 async def change_location_radius(browser):
 
-    # Change location radius
     try:
         browser.execute_script(SCRIPT_OPEN_LOCATION_MENU)
         await asyncio.sleep(1) 
@@ -81,10 +80,7 @@ async def change_location_radius(browser):
 
 async def scroll_bottom_page(browser):
 
-    #Scroll down to load first two listings sections
     try:
-        
-        # Scroll down to the bottom of the page using JavaScript
         browser.execute_script(SCRIPT_SCROLL_BOTTOM_PAGE)
         await asyncio.sleep(0.3)
 
@@ -94,18 +90,13 @@ async def scroll_bottom_page(browser):
 
 async def extract_description_listings(listings, browser):
 
-    # get description listing
     for listing in listings:
         url = listing[2]
         browser.get(url)
         await asyncio.sleep(0.01)
 
-        # Retrieve the HTML
         html = browser.page_source
-
-        # Use BeautifulSoup to parse the HTML
         soup = BeautifulSoup(html, 'html.parser')
-
         description = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})[1].text
 
         # remove listings that are not free
