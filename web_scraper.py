@@ -41,7 +41,7 @@ async def open_chrome_to_marketplace_free_items_page():
         service = Service(chromedriver_path),
     )
 
-    url = f"https://www.facebook.com/marketplace/{os.getenv("FACEBOOK_MARKETPLACE_LOCATION_STRING")}/free/?sortBy=creation_time_descend"
+    url = f"https://www.facebook.com/marketplace/{os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")}/free/?sortBy=creation_time_descend"
 
     browser.get(url)
 
