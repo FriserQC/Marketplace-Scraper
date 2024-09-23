@@ -1,7 +1,12 @@
 import re
 
-UNWANTED_WORDS = ['offre', 'offer', '$', 'sale', 'vente', 'achete', 'échange', 'echange', 'vendre' 
-                 'achète', 'buy', 'sell', 'price', 'prix', 'trade', 'trading', 'recherche']
+UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
+                  'sale', 'vente',
+                  'achete', 'achète', 'achetes', 'achètes', 'acheter', 'buy', 'buying',
+                  'échange', 'echange', 'échanger', 'echanger', 'trade', 'trading', 
+                  'vendre', 'vente', 'sell', 'selling', 
+                  'price', 'prices', 'prix', 
+                  'recherche']
 
 
 def extract_listings_information(links, previousListings):
@@ -36,13 +41,20 @@ def extract_listings_information(links, previousListings):
     return extracted_data
 
 def is_unwanted_string(stringToCheck):
-    contains = False
-
     stringToCheck = stringToCheck.lower().replace('\n', ' ').strip()
 
-    for word in UNWANTED_WORDS:
-        if word in stringToCheck:
-            contains = True
-            break
+    # check if contains $ in string
+    checkDollarSign = re.compile(r"\$").search(stringToCheck)
+    if checkDollarSign != None:
+        return True
 
-    return contains
+    for word in UNWANTED_WORDS:
+        checks = r"\b(?:"+word+r")\b"
+        pattern = re.compile(checks, re.IGNORECASE)
+        matched = pattern.search(stringToCheck)
+        if matched != None:
+            return True
+        
+    # TODO maybe if find unwanted, check if contains "give away" or "a donner" and keep the listing
+
+    return False
