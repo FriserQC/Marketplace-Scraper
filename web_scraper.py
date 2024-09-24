@@ -32,7 +32,7 @@ async def open_chrome_to_marketplace_free_items_page():
 
     options = webdriver.ChromeOptions() 
     options.add_argument("start-maximized")
-    
+
     # to supress the error messages/logs
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
@@ -90,22 +90,34 @@ async def scroll_bottom_page(browser):
 
 async def extract_description_listings(listings, browser):
 
+    listingsToRemove = []
+
     for listing in listings:
         url = listing[2]
         browser.get(url)
-        await asyncio.sleep(0.01)
 
         html = browser.page_source
         soup = BeautifulSoup(html, 'html.parser')
-        description = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})[1].text
+        # TODO find more reliable way of getting description (sometimes, not the right one...)
+        descriptions = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})
+        description = descriptions[1].text
+
+        # trying to fix unfound descriptions (usually happen with car listings and other special listings)
+        # for item in descriptions:
+        #     if item.next_element == item.text:
+        #         description = item.text
+        #         break
 
         # remove listings that are not free
         if is_unwanted_string(description):
-            listings.remove(listing)
+            listingsToRemove.append(listing)
         else:
             listing.append(description)
 
     browser.close()
+
+    for listing in listingsToRemove:
+        listings.remove(listing)
 
     return listings
 
