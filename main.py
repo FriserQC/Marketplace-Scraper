@@ -50,7 +50,7 @@ class MyClient(discord.Client):
 
             print("End : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
 
-            await asyncio.sleep(600)  # task runs every 10 minutes
+            await asyncio.sleep(300)  # task runs every 5 minutes
 
 
 client = MyClient(intents=discord.Intents.default())
