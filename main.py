@@ -9,13 +9,14 @@ from dotenv import load_dotenv, dotenv_values
 load_dotenv() 
 
 TOKEN = os.getenv("DISCORD_TOKEN")
-CHANNEL_ID = (int)(os.getenv("CHANNEL_ID"))
+FREE_MISC_CHANNEL_ID = (int)(os.getenv("FREE_MISC_CHANNEL_ID"))
+FREE_FURNITURE_CHANNEL_ID = (int)(os.getenv("FREE_FURNITURE_CHANNEL_ID"))
 MAX_NUMBER_OF_PREVIOUS_LISTINGS = 300
 
 class MyClient(discord.Client):
-    previousListings = []
 
     def __init__(self, *args, **kwargs):
+        self.previousListings = []
         super().__init__(*args, **kwargs)
 
     async def setup_hook(self) -> None:
@@ -28,18 +29,22 @@ class MyClient(discord.Client):
 
     async def my_background_task(self):
         await self.wait_until_ready()
-        channel = client.get_channel(CHANNEL_ID)
+        miscChannel = client.get_channel(FREE_MISC_CHANNEL_ID)
+        furnitureChannel = client.get_channel(FREE_FURNITURE_CHANNEL_ID)
         while not self.is_closed():
             print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
 
             # sends every message
             listings = await extract_wanted_listings(self.previousListings)
             for listing in listings:
-                url = listing[2]
-                if url not in self.previousListings:
-                    message = (f'Title: {listing[0].strip()}\nLocation: {listing[1].strip()}\nURL: {url}\n\n')
-                    await channel.send(message)
-                    self.previousListings.append(url)
+                if listing.url not in self.previousListings:
+                    message = (f'Title: {listing.title.strip()}\nLocation: {listing.location.strip()}\nURL: {listing.url}\n\n')
+
+                    if listing.isFurniture == True:
+                        await furnitureChannel.send(message)
+                    else :
+                        await miscChannel.send(message)
+                    self.previousListings.append(listing.url)
 
             print("number of previous listings : " + str(len(self.previousListings)))
 

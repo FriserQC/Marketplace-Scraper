@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import re
 import asyncio
 from data_filtering import is_unwanted_string
+from listing import Listing
 
 import os
 from dotenv import load_dotenv, dotenv_values 
@@ -106,15 +107,16 @@ def extract_listings_informations(listing_links):
         location = lines[-1]
         url = "https://www.facebook.com" + re.sub(r'\?.*', '', item['url'])
 
-        extracted_data.append([title, location, url])
+        listing = Listing(title, location, url)
+
+        extracted_data.append(listing)
 
     return extracted_data
 
 async def extract_description_listings(listings, browser):
 
     for listing in listings:
-        url = listing[2]
-        browser.get(url)
+        browser.get(listing.url)
 
         html = browser.page_source
         soup = BeautifulSoup(html, 'html.parser')
@@ -128,7 +130,7 @@ async def extract_description_listings(listings, browser):
         #         description = item.text
         #         break
 
-        listing.append(description)
+        listing.description = description
 
     browser.close()
 
@@ -149,9 +151,7 @@ async def extract_wanted_listings(previousListings) :
 
     # remove listings from previous listings or that have titles containing unwanted words...
     for listing in listings:
-        title = listing[0]
-        url = listing[2]
-        if is_unwanted_string(title) or any(listingsUrl in url for listingsUrl in previousListings):
+        if is_unwanted_string(listing.title) or any(listingsUrl in listing.url for listingsUrl in previousListings):
                 # only add if not from previous ones
                 listings.remove(listing)
 
@@ -159,8 +159,12 @@ async def extract_wanted_listings(previousListings) :
 
     # remove listings with description that contain unwanted words...
     for listing in listings:
-        if is_unwanted_string(listing[3]):
+        if is_unwanted_string(listing.description):
             listings.remove(listing)
+
+    # check if furniture
+    for listing in listings:
+        listing.is_furniture()
 
     return listings
 
