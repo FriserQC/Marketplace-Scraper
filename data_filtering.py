@@ -3,9 +3,8 @@ import re
 UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
                   'sale', 'sales', 'wholesale', 'wholesales', 'vente', 'ventes',
                   'vendre', 'sell', 'selling', 
-                  'price', 'prices', 'prix', 
-                  'cash',
-                  'échange', 'echange', 'échanger', 'echanger', 'trade', 'trades', 'trading', 
+                  'price', 'prices', 'prix', 'cash',
+                  'échange', 'echange', 'échanger', 'echanger', 'trade', 'trades', 'trading', 'exchange', 'exchanges',
                   'achete', 'achète', 'achetes', 'achètes', 'acheter', 'buy', 'buying',
                   'recherche']
 
