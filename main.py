@@ -59,5 +59,5 @@ class MyClient(discord.Client):
 
 
 client = MyClient(intents=discord.Intents.default())
-client.run(TOKEN)
-#client.run(TOKEN, log_handler=None)
+# client.run(TOKEN)
+client.run(TOKEN, log_handler=None)
