@@ -7,7 +7,7 @@ import os
 from bs4 import BeautifulSoup
 import re
 import asyncio
-from data_filtering import extract_listings_information, is_unwanted_string
+from data_filtering import is_unwanted_string
 
 import os
 from dotenv import load_dotenv, dotenv_values 
@@ -88,6 +88,28 @@ async def scroll_bottom_page(browser):
         print(f"An error occurred: {e}")
         pass
 
+def extract_listings_informations(listing_links):
+
+    listing_data = []
+
+    for listing_link in listing_links:
+        url = listing_link.get('href')
+        text = '\n'.join(listing_link.stripped_strings)
+        #image = listing_link.find('img')["src"]
+        listing_data.append({'text': text, 'url': url})
+
+    extracted_data = []
+
+    for item in listing_data:
+        lines = item['text'].split('\n')
+        title = lines[-2]
+        location = lines[-1]
+        url = "https://www.facebook.com" + re.sub(r'\?.*', '', item['url'])
+
+        extracted_data.append([title, location, url])
+
+    return extracted_data
+
 async def extract_description_listings(listings, browser):
 
     for listing in listings:
@@ -123,11 +145,19 @@ async def extract_wanted_listings(previousListings) :
     soup = BeautifulSoup(html, 'html.parser')
     links = soup.find_all('a', {"class": LISTING_CLASS_NAME})
 
-    listings = extract_listings_information(links, previousListings)
+    listings = extract_listings_informations(links)
+
+    # remove listings from previous listings or that have titles containing unwanted words...
+    for listing in listings:
+        title = listing[0]
+        url = listing[2]
+        if is_unwanted_string(title) or any(listingsUrl in url for listingsUrl in previousListings):
+                # only add if not from previous ones
+                listings.remove(listing)
 
     listings = await extract_description_listings(listings, browser)
 
-    # Remove listings with description that contain unwanted words...
+    # remove listings with description that contain unwanted words...
     for listing in listings:
         if is_unwanted_string(listing[3]):
             listings.remove(listing)
