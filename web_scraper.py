@@ -90,8 +90,6 @@ async def scroll_bottom_page(browser):
 
 async def extract_description_listings(listings, browser):
 
-    listingsToRemove = []
-
     for listing in listings:
         url = listing[2]
         browser.get(url)
@@ -108,20 +106,13 @@ async def extract_description_listings(listings, browser):
         #         description = item.text
         #         break
 
-        # remove listings that are not free
-        if is_unwanted_string(description):
-            listingsToRemove.append(listing)
-        else:
-            listing.append(description)
+        listing.append(description)
 
     browser.close()
 
-    for listing in listingsToRemove:
-        listings.remove(listing)
-
     return listings
 
-async def extract_listings(previousListings) :
+async def extract_wanted_listings(previousListings) :
     browser = await open_chrome_to_marketplace_free_items_page()
 
     await close_log_in_popup(browser)
@@ -135,6 +126,11 @@ async def extract_listings(previousListings) :
     listings = extract_listings_information(links, previousListings)
 
     listings = await extract_description_listings(listings, browser)
+
+    # Remove listings with description that contain unwanted words...
+    for listing in listings:
+        if is_unwanted_string(listing[3]):
+            listings.remove(listing)
 
     return listings
 

@@ -1,6 +1,6 @@
 import discord
 from discord.ext import tasks
-from web_scraper import extract_listings
+from web_scraper import extract_wanted_listings
 import asyncio
 import datetime
 
@@ -31,9 +31,9 @@ class MyClient(discord.Client):
         channel = client.get_channel(CHANNEL_ID)
         while not self.is_closed():
             print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
-            
+
             # sends every message
-            listings = await extract_listings(self.previousListings)
+            listings = await extract_wanted_listings(self.previousListings)
             for listing in listings:
                 url = listing[2]
                 if url not in self.previousListings:

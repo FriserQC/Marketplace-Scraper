@@ -17,7 +17,6 @@ def extract_listings_information(links, previousListings):
 
     # Remove listings that are not free based on list of words
     listing_links = [link for link in links if not is_unwanted_string(link.text)]
-
     listing_data = []
 
     for listing_link in listing_links:
@@ -30,11 +29,8 @@ def extract_listings_information(links, previousListings):
 
     for item in listing_data:
         lines = item['text'].split('\n')
-
         title = lines[-2]
-
         location = lines[-1]
-
         url = "https://www.facebook.com" + re.sub(r'\?.*', '', item['url'])
 
         # only add if not from previous ones
@@ -44,8 +40,8 @@ def extract_listings_information(links, previousListings):
     return extracted_data
 
 def is_unwanted_string(stringToCheck):
-    remove = False
 
+    remove = False
     stringToCheck = stringToCheck.lower().replace('\n', ' ').strip()
 
     # Check if contains $ in string
@@ -69,6 +65,7 @@ def is_unwanted_string(stringToCheck):
     return remove
 
 def word_is_in_string(word, stringToCheck):
+
     checks = r"\b(?:"+word+r")\b"
     pattern = re.compile(checks, re.IGNORECASE)
     matched = pattern.search(stringToCheck)
