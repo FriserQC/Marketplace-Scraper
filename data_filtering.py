@@ -9,6 +9,9 @@ UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
                   'achete', 'achète', 'achetes', 'achètes', 'acheter', 'buy', 'buying',
                   'recherche']
 
+WANTED_WORDS = ['free', 'gratuit', 
+                'donner', 'à donner', 'donné', 'donne', 'give away', 'giving away']
+
 
 def extract_listings_information(links, previousListings):
 
@@ -41,20 +44,35 @@ def extract_listings_information(links, previousListings):
     return extracted_data
 
 def is_unwanted_string(stringToCheck):
+    remove = False
+
     stringToCheck = stringToCheck.lower().replace('\n', ' ').strip()
 
-    # check if contains $ in string
+    # Check if contains $ in string
     checkDollarSign = re.compile(r"\$").search(stringToCheck)
     if checkDollarSign != None:
-        return True
+        remove = True
 
+    # Check if contains unwanted word
     for word in UNWANTED_WORDS:
-        checks = r"\b(?:"+word+r")\b"
-        pattern = re.compile(checks, re.IGNORECASE)
-        matched = pattern.search(stringToCheck)
-        if matched != None:
-            return True
-        
-    # TODO maybe if find unwanted, check if contains "give away" or "a donner" and keep the listing
+        remove = word_is_in_string(word, stringToCheck)
+        if remove == True:
+            break
 
+    # Check if contains wanted word
+    if remove == True:
+        for word in WANTED_WORDS:
+            remove = not word_is_in_string(word, stringToCheck)
+            if remove == False:
+                break
+
+    return remove
+
+def word_is_in_string(word, stringToCheck):
+    checks = r"\b(?:"+word+r")\b"
+    pattern = re.compile(checks, re.IGNORECASE)
+    matched = pattern.search(stringToCheck)
+    if matched != None:
+        return True
+    
     return False
