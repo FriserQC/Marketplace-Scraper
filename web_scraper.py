@@ -117,6 +117,8 @@ def extract_listings_informations(listing_links):
 
 async def extract_description_listings(listings, browser):
 
+    conditionWords = ['Condition', 'Used - Good', 'Used - Fair', 'New', 'Used - like new', 'Forgot Account?']
+
     for listing in listings:
         try:
 
@@ -130,8 +132,9 @@ async def extract_description_listings(listings, browser):
 
             # trying to fix unfound descriptions (usually happen with car listings and other special listings)
             for item in descriptions:
-                if item.next_element == item.text and item.text != 'Condition' and item.text != 'Used - Good' and item.text != 'Used - Fair' and item.text != 'New' and item.text != 'Used - like new' :
-                    description = item.text
+                text = item.text
+                if item.next_element == text and not any(condition in text for condition in conditionWords):
+                    description = text
                     break
 
             listing.description = description

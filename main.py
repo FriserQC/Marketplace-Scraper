@@ -54,6 +54,7 @@ class MyClient(discord.Client):
                     self.previousListings.pop(0)
 
             print("End : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
+            print('------')
 
             await asyncio.sleep(300)  # task runs every 5 minutes
 
