@@ -105,7 +105,12 @@ def extract_listings_informations(listing_links):
 
     for item in listing_data:
         lines = item['text'].split('\n')
-        title = lines[-2]
+
+        # get all segments of title (if used \n in it)
+        title = ''
+        for i in range(1, len(lines)-1):
+            title = title + lines[i]
+
         location = lines[-1]
         url = "https://www.facebook.com" + re.sub(r'\?.*', '', item['url'])
 
@@ -159,17 +164,23 @@ async def extract_wanted_listings(previousListings) :
     listings = extract_listings_informations(links)
 
     # remove listings from previous listings or that have titles containing unwanted words...
+    listingsToRemove = []
     for listing in listings:
         if is_unwanted_string(listing.title) or any(listingsUrl in listing.url for listingsUrl in previousListings):
                 # only add if not from previous ones
-                listings.remove(listing)
+                listingsToRemove.append(listing)
+    for listing in listingsToRemove:
+        listings.remove(listing)
 
     listings = await extract_description_listings(listings, browser)
 
     # remove listings with description that contain unwanted words...
+    listingsToRemove = []
     for listing in listings:
         if is_unwanted_string(listing.description):
-            listings.remove(listing)
+            listingsToRemove.append(listing)
+    for listing in listingsToRemove:
+        listings.remove(listing)
 
     # check if furniture
     for listing in listings:

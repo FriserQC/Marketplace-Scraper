@@ -14,20 +14,18 @@ WANTED_WORDS = ['free', 'gratuit',
 
 def is_unwanted_string(stringToCheck):
 
-    remove = False
     stringToCheck = stringToCheck.lower().replace('\n', ' ').strip()
 
     # Check if contains $ in string
     checkDollarSign = re.compile(r"\$").search(stringToCheck)
     if checkDollarSign != None:
-        remove = True
+        return True
 
     # Check if contains unwanted word only if didn't find dollar sign $
-    if remove == False:
-        for word in UNWANTED_WORDS:
-            remove = word_is_in_string(word, stringToCheck)
-            if remove == True:
-                break
+    for word in UNWANTED_WORDS:
+        remove = word_is_in_string(word, stringToCheck)
+        if remove == True:
+            return True
 
     # Check if contains wanted word             Too many false positives...
     # if remove == True:
@@ -36,7 +34,7 @@ def is_unwanted_string(stringToCheck):
     #         if remove == False:
     #             break
 
-    return remove
+    return False
 
 def word_is_in_string(word, stringToCheck):
 
