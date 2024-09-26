@@ -34,7 +34,7 @@ async def open_chrome_to_marketplace_free_items_page():
     options = webdriver.ChromeOptions() 
     options.add_argument("start-maximized")
     options.page_load_strategy = 'eager'
-    options.timeouts = { 'pageLoad': 10000 }
+    options.timeouts = { 'pageLoad': 20000 }
 
     # to supress the error messages/logs
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
