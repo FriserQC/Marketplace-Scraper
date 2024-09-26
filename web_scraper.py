@@ -14,7 +14,7 @@ import os
 from dotenv import load_dotenv, dotenv_values 
 load_dotenv() 
 
-LISTING_DESCRIPTION_CLASS_NAME = 'x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x3x7a5m x6prxxf xvq8zen xo1l8bm xzsf02u'
+LISTING_DESCRIPTION_CLASS_NAME = 'xz9dl7a x4uap5 xsag5q8 xkhd6sd x126k92a'
 LISTING_CLASS_NAME = 'x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1sur9pj xkrqix3 x1lku1pv'
     
 SCRIPT_OPEN_LOCATION_MENU = 'document.getElementsByClassName("x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x1ypdohk xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1o1ewxj x3x9cwd x1e5q0jg x13rtm0m x87ps6o x1lku1pv x1a2a7pz x9f619 x3nfvp2 xdt5ytf xl56j7k x1n2onr6 xh8yej3")[1].click();'
@@ -126,20 +126,18 @@ async def extract_description_listings(listings, browser):
 
             html = browser.page_source
             soup = BeautifulSoup(html, 'html.parser')
-            # TODO find more reliable way of getting description (sometimes, not the right one...)
-            descriptions = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})
-            description = descriptions[1].text
+            description = soup.find('div', {"class": LISTING_DESCRIPTION_CLASS_NAME}).text
 
             # trying to fix unfound descriptions (usually happen with car listings and other special listings)
-            for item in descriptions:
-                text = item.text
-                if item.next_element == text and not any(condition in text for condition in conditionWords):
-                    description = text
-                    break
+            # for item in descriptions:
+            #     text = item.text
+            #     if item.next_element == text and not any(condition in text for condition in conditionWords):
+            #         description = text
+            #         break
 
             listing.description = description
         except Exception as e:
-            print(f"Description error : {e}")
+            print(f"Description not found : {e}")
             pass
 
 

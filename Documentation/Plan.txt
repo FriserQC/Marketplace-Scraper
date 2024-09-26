@@ -1,6 +1,4 @@
 TODO : 
-- Maybe use listing object instead of array of varying length
-- Maybe check for special listings like cars, services, etc. (not parsing the right description)
 - Complete Readme.md
 - Create install executable that auto install requirements and runs in background
 - Checks if i could be interested with ai or smt (outdoors, tools, computers, etc.)
