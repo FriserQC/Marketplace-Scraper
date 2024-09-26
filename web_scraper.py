@@ -34,6 +34,7 @@ async def open_chrome_to_marketplace_free_items_page():
     options = webdriver.ChromeOptions() 
     options.add_argument("start-maximized")
     options.page_load_strategy = 'eager'
+    options.timeouts = { 'pageLoad': 10000 }
 
     # to supress the error messages/logs
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -117,21 +118,27 @@ def extract_listings_informations(listing_links):
 async def extract_description_listings(listings, browser):
 
     for listing in listings:
-        browser.get(listing.url)
+        try:
 
-        html = browser.page_source
-        soup = BeautifulSoup(html, 'html.parser')
-        # TODO find more reliable way of getting description (sometimes, not the right one...)
-        descriptions = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})
-        description = descriptions[1].text
+            browser.get(listing.url)
 
-        # trying to fix unfound descriptions (usually happen with car listings and other special listings)
-        # for item in descriptions:
-        #     if item.next_element == item.text:
-        #         description = item.text
-        #         break
+            html = browser.page_source
+            soup = BeautifulSoup(html, 'html.parser')
+            # TODO find more reliable way of getting description (sometimes, not the right one...)
+            descriptions = soup.find_all('span', {"class": LISTING_DESCRIPTION_CLASS_NAME})
+            description = descriptions[1].text
 
-        listing.description = description
+            # trying to fix unfound descriptions (usually happen with car listings and other special listings)
+            for item in descriptions:
+                if item.next_element == item.text and item.text != 'Condition' and item.text != 'Used - Good' and item.text != 'Used - Fair' and item.text != 'New' and item.text != 'Used - like new' :
+                    description = item.text
+                    break
+
+            listing.description = description
+        except Exception as e:
+            print(f"Description error : {e}")
+            pass
+
 
     browser.close()
 

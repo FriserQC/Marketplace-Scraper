@@ -4,6 +4,7 @@ UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
                   'sale', 'sales', 'wholesale', 'wholesales', 'vente', 'ventes',
                   'vendre', 'sell', 'selling', 
                   'price', 'prices', 'prix', 'cash',
+                  'not free', 'pas gratuit',
                   'échange', 'echange', 'échanger', 'echanger', 'trade', 'trades', 'trading', 'exchange', 'exchanges',
                   'achete', 'achète', 'achetes', 'achètes', 'acheter', 'buy', 'buying',
                   'recherche']
@@ -28,12 +29,12 @@ def is_unwanted_string(stringToCheck):
             if remove == True:
                 break
 
-    # Check if contains wanted word
-    if remove == True:
-        for word in WANTED_WORDS:
-            remove = not word_is_in_string(word, stringToCheck)
-            if remove == False:
-                break
+    # Check if contains wanted word             Too many false positives...
+    # if remove == True:
+    #     for word in WANTED_WORDS:
+    #         remove = not word_is_in_string(word, stringToCheck)
+    #         if remove == False:
+    #             break
 
     return remove
 
