@@ -7,6 +7,8 @@ UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
                   'not free', 'pas gratuit',
                   'échange', 'echange', 'échanger', 'echanger', 'trade', 'trades', 'trading', 'exchange', 'exchanges',
                   'achete', 'achète', 'achetes', 'achètes', 'acheter', 'buy', 'buying',
+                  'credit', 'crédit',
+                  'free shipping',
                   'recherche']
 
 WANTED_WORDS = ['free', 'gratuit', 
