@@ -42,10 +42,10 @@ class MyClient(discord.Client):
                 if listing.isPrevious == False:
                     message = (f'Title: {listing.title.strip()}\nLocation: {listing.location.strip()}\nURL: {listing.url}\n\n')
 
-                    if listing.isFurniture == True:
-                        await furnitureChannel.send(message)
-                    elif listing.isUnwanted == True:
+                    if listing.isUnwanted == True:
                         await unwantedChannel.send(message)
+                    elif listing.isFurniture == True:
+                        await furnitureChannel.send(message)
                     else :
                         await miscChannel.send(message)
                     self.previousListings.append(listing.url)
