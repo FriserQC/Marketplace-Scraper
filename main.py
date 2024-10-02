@@ -11,6 +11,7 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 FREE_MISC_CHANNEL_ID = (int)(os.getenv("FREE_MISC_CHANNEL_ID"))
 FREE_FURNITURE_CHANNEL_ID = (int)(os.getenv("FREE_FURNITURE_CHANNEL_ID"))
+FREE_UNWANTED_CHANNEL_ID = (int)(os.getenv("FREE_UNWANTED_CHANNEL_ID"))
 MAX_NUMBER_OF_PREVIOUS_LISTINGS = 300
 
 class MyClient(discord.Client):
@@ -31,17 +32,20 @@ class MyClient(discord.Client):
         await self.wait_until_ready()
         miscChannel = client.get_channel(FREE_MISC_CHANNEL_ID)
         furnitureChannel = client.get_channel(FREE_FURNITURE_CHANNEL_ID)
+        unwantedChannel = client.get_channel(FREE_UNWANTED_CHANNEL_ID)
         while not self.is_closed():
             print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
 
             # sends every message
             listings = await extract_wanted_listings(self.previousListings)
             for listing in listings:
-                if listing.url not in self.previousListings:
+                if listing.isPrevious == False:
                     message = (f'Title: {listing.title.strip()}\nLocation: {listing.location.strip()}\nURL: {listing.url}\n\n')
 
                     if listing.isFurniture == True:
                         await furnitureChannel.send(message)
+                    elif listing.isUnwanted == True:
+                        await unwantedChannel.send(message)
                     else :
                         await miscChannel.send(message)
                     self.previousListings.append(listing.url)

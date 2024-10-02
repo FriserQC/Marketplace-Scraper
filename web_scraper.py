@@ -122,29 +122,21 @@ def extract_listings_informations(listing_links):
 
 async def extract_description_listings(listings, browser):
 
-    conditionWords = ['Condition', 'Used - Good', 'Used - Fair', 'New', 'Used - like new', 'Forgot Account?']
-
     for listing in listings:
-        try:
+        if listing.isPrevious == True :
+            continue
 
+        try:
             browser.get(listing.url)
 
             html = browser.page_source
             soup = BeautifulSoup(html, 'html.parser')
             description = soup.find('div', {"class": LISTING_DESCRIPTION_CLASS_NAME}).text
 
-            # trying to fix unfound descriptions (usually happen with car listings and other special listings)
-            # for item in descriptions:
-            #     text = item.text
-            #     if item.next_element == text and not any(condition in text for condition in conditionWords):
-            #         description = text
-            #         break
-
             listing.description = description
         except Exception as e:
             print(f"Description not found : {e}")
             pass
-
 
     browser.close()
 
@@ -163,24 +155,19 @@ async def extract_wanted_listings(previousListings) :
 
     listings = extract_listings_informations(links)
 
-    # remove listings from previous listings or that have titles containing unwanted words...
-    listingsToRemove = []
+    # mark listings from previous listings or that have titles containing unwanted words...
     for listing in listings:
-        if is_unwanted_string(listing.title) or any(listingsUrl in listing.url for listingsUrl in previousListings):
-                # only add if not from previous ones
-                listingsToRemove.append(listing)
-    for listing in listingsToRemove:
-        listings.remove(listing)
+        if is_unwanted_string(listing.title):
+            listing.isUnwanted = True
+        if any(listingsUrl in listing.url for listingsUrl in previousListings):
+            listing.isPrevious = True
 
     listings = await extract_description_listings(listings, browser)
 
-    # remove listings with description that contain unwanted words...
-    listingsToRemove = []
+    # mark listings with description that contain unwanted words...
     for listing in listings:
         if is_unwanted_string(listing.description):
-            listingsToRemove.append(listing)
-    for listing in listingsToRemove:
-        listings.remove(listing)
+            listing.isUnwanted = True
 
     # check if furniture
     for listing in listings:

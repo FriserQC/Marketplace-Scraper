@@ -10,6 +10,8 @@ class Listing():
         self.url = url
         self.description = ""
         self.isFurniture = False
+        self.isUnwanted = False
+        self.isPrevious = False
 
     def is_furniture(self):
 
