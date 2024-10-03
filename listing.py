@@ -1,6 +1,12 @@
 from data_filtering import word_is_in_string
 
-FURNITURE_WORDS = ['meuble', 'meubles', 'furniture', 'furnitures']
+FURNITURE_WORDS = ['meuble', 'meubles', 'furniture', 'furnitures',
+                   'bureau', 'bureaux', 'desk', 'desks', 'chaise', 'chaises', 'chair', 'chairs',
+                   'commode', 'commodes', 'ottoman', 
+                   'sofa', 'divan', 'fauteuil', 'canapé', 'sectionnelle', 'couch',
+                   'bed', 'lit',
+                   'table', 'tables', 
+                   'lampe', 'lampes', 'lamp', 'lamps']
 
 class Listing():
 

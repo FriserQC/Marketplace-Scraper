@@ -9,6 +9,7 @@ UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
                   'achete', 'achète', 'achetes', 'achètes', 'acheter', 'buy', 'buying',
                   'échangeable', 'echangeable', 'remboursable',
                   'credit', 'crédit',
+                  'souission', 'quote',
                   'free shipping', 'fast shipping', 
                   'financement', 'financing',
                   'recherche']
