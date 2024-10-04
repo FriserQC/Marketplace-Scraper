@@ -1,10 +1,11 @@
 from data_filtering import word_is_in_string
 
 FURNITURE_WORDS = ['meuble', 'meubles', 'furniture', 'furnitures',
-                   'bureau', 'bureaux', 'desk', 'desks', 'chaise', 'chaises', 'chair', 'chairs',
+                   'bureau', 'bureaux', 'desk', 'desks', 
+                   'chaise', 'chaises', 'chair', 'chairs',
                    'commode', 'commodes', 'ottoman', 
-                   'sofa', 'divan', 'fauteuil', 'canapé', 'sectionnelle', 'couch',
-                   'bed', 'lit',
+                   'sofa', 'sofas', 'divan', 'divans', 'fauteuil', 'fauteuils', 'canapé', 'canapés', 'sectionnelle', 'sectionnelles', 'couch', 'couchs',
+                   'bed', 'beds', 'lit', 'lits', 
                    'table', 'tables', 
                    'lampe', 'lampes', 'lamp', 'lamps']
 
