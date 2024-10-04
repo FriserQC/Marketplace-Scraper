@@ -1,5 +1,5 @@
 import discord
-from discord.ext import tasks
+from discord.ext import tasks 
 from web_scraper import extract_wanted_listings
 import asyncio
 import datetime
@@ -64,5 +64,4 @@ class MyClient(discord.Client):
 
 
 client = MyClient(intents=discord.Intents.default())
-client.run(TOKEN)
-# client.run(TOKEN, log_handler=None)
+client.run(TOKEN, reconnect=True, log_level=50)
