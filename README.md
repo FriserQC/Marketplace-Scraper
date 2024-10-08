@@ -29,5 +29,5 @@ Select the city of your choosing the marketplace and copy the value that is high
 <ol>
   <li>Fix when price has changed... (still has previous price in title price...)</li>
   <li>Create install executable that auto install requirements and runs in background</li>
-  <li>Add listing categorisations (outdoors, tools, computers, etc.) with AI (image of text based) </li>
+  <li>Add listing categorisations (outdoors, tools, computers, etc.) with AI (image or text based) </li>
 </ol> 
