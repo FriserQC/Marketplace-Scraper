@@ -25,9 +25,9 @@ Select the city of your choosing the marketplace and copy the value that is high
 
 ![Exemple](Documentation/MarketplaceLocationStringExemple.png)
 
-### Futur Possible Features :
+### Future Potential Features :
 <ol>
   <li>Fix when price has changed... (still has previous price in title price...)</li>
   <li>Create install executable that auto install requirements and runs in background</li>
-  <li>Checks if i could be interested with ai or smt (outdoors, tools, computers, etc.)</li>
+  <li>Add listing categorisations (outdoors, tools, computers, etc.) with AI (image of text based) </li>
 </ol> 
