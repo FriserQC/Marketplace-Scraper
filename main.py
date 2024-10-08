@@ -26,13 +26,14 @@ class MyClient(discord.Client):
 
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
-        print('------')
 
     async def my_background_task(self):
         await self.wait_until_ready()
+
         miscChannel = client.get_channel(FREE_MISC_CHANNEL_ID)
         furnitureChannel = client.get_channel(FREE_FURNITURE_CHANNEL_ID)
         unwantedChannel = client.get_channel(FREE_UNWANTED_CHANNEL_ID)
+        
         while not self.is_closed():
             print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
 

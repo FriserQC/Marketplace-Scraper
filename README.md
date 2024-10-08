@@ -6,8 +6,8 @@ You need a discord bot that can send messages on channels.
 
 ### To run whis program you first need to :
 <ol>
-  <li>Have an installed version of the Google Chrome web browser </li>
-  <li>Create your own .env file with the parameters : </li>
+  <li>Have an installed version of the Google Chrome web browser</li>
+  <li>Create your own .env file with the parameters :</li>
     <ol>
         <li>DISCORD_TOKEN = <em>your own</em></li>
         <li>FREE_MISC_CHANNEL_ID = <em>your own</em></li>
@@ -24,3 +24,10 @@ You need a discord bot that can send messages on channels.
 Select the city of your choosing the marketplace and copy the value that is highlighted in the image below.
 
 ![Exemple](Documentation/MarketplaceLocationStringExemple.png)
+
+### Futur Possible Features :
+<ol>
+  <li>Fix when price has changed... (still has previous price in title price...)</li>
+  <li>Create install executable that auto install requirements and runs in background</li>
+  <li>Checks if i could be interested with ai or smt (outdoors, tools, computers, etc.)</li>
+</ol> 

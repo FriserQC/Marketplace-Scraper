@@ -12,7 +12,10 @@ FURNITURE_WORDS = ['meuble', 'meubles', 'furniture', 'furnitures',
                    'laveuse', 'washer', 'sècheuse', 'dryer',
                    'frigo', 'frigidaire', 'fridge',
                    'armoire', 'armoires',
-                   'tablette', 'tablettes', 'étagères', 'étagère']
+                   'tablette', 'tablettes', 'étagères', 'étagère',
+                   'coffre', 
+                   'miroir', 'mirror',
+                   'buffet']
 
 class Listing():
 
