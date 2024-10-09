@@ -54,28 +54,36 @@ async def open_chrome_to_marketplace_free_items_page():
 async def close_log_in_popup(browser):
 
     try:
-        await asyncio.sleep(1)
+        await asyncio.sleep(2)
         close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
         close_button.click()
 
     except Exception as e:
-        print(f"Could not find or click the close button! Error : {e}")
+        print(f"Could not find or click the close button, gonna retry! Error : {e}")
+        await asyncio.sleep(10)
+        browser.close()
+        browser = await open_chrome_to_marketplace_free_items_page()
+        await close_log_in_popup(browser)
         pass
+
+    return browser
 
 async def change_location_radius(browser):
 
     try:
+        await asyncio.sleep(2)
+
         browser.execute_script(SCRIPT_OPEN_LOCATION_MENU)
-        await asyncio.sleep(1) 
+        await asyncio.sleep(2) 
 
         browser.execute_script(SCRIPT_SELECT_RADIUS_OPTIONS)
-        await asyncio.sleep(1) 
+        await asyncio.sleep(2) 
 
         browser.execute_script(SCRIPT_SELECT_20KM_RADIUS)
-        await asyncio.sleep(1) 
+        await asyncio.sleep(2) 
 
         browser.execute_script(SCRIPT_CLOSE_LOCATION_MENU)
-        await asyncio.sleep(1) 
+        await asyncio.sleep(2) 
 
     except Exception as e:
         print(f"Could not change location radius! Error : {e}")
@@ -145,7 +153,7 @@ async def extract_description_listings(listings, browser):
 async def extract_wanted_listings(previousListings) :
     browser = await open_chrome_to_marketplace_free_items_page()
 
-    await close_log_in_popup(browser)
+    browser = await close_log_in_popup(browser)
     await change_location_radius(browser)
     await scroll_bottom_page(browser)
     
