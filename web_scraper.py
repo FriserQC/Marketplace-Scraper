@@ -61,7 +61,7 @@ async def close_log_in_popup(browser):
     except Exception as e:
         print(f"Could not find or click the close button, gonna retry! Error : {e}")
         await asyncio.sleep(10)
-        browser.close()
+        browser.quit()
         browser = await open_chrome_to_marketplace_free_items_page()
         await close_log_in_popup(browser)
         pass
@@ -146,7 +146,7 @@ async def extract_description_listings(listings, browser):
             print(f"Description not found : {e}")
             pass
 
-    browser.close()
+    browser.quit()
 
     return listings
 
