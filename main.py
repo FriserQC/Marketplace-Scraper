@@ -37,14 +37,14 @@ class MyClient(discord.Client):
         while not self.is_closed():
             print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
 
-            # run task, if takes more than 20 minutes gonna cancel and retry
+            # run task, if takes more than 15 minutes gonna cancel and retry
             try:
-                async with asyncio.timeout(1200):
+                async with asyncio.timeout(900):
                     # sends every message
                     listings = await extract_wanted_listings(self.previousListings)
                     for listing in listings:
                         if listing.isPrevious == False:
-                            message = (f'Title: {listing.title.strip()}\nLocation: {listing.location.strip()}\nURL: {listing.url}\n\n')
+                            message = (f'Location: {listing.location.strip()}\nURL: {listing.url}\n')
 
                             if listing.isUnwanted == True:
                                 await unwantedChannel.send(message)
@@ -64,11 +64,10 @@ class MyClient(discord.Client):
                     print("End : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
                     print('------')
 
-                await asyncio.sleep(480)  # task runs every 8 minutes
+                await asyncio.sleep(300)  # task runs every 5 minutes
 
             except TimeoutError:
-                print("The scraper operation took too long, gonna retry in 30 seconds")
-                await asyncio.sleep(30)
+                print("The scraper operation took too long, gonna retry")
 
 
 client = MyClient(intents=discord.Intents.default())

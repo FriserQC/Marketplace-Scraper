@@ -33,7 +33,6 @@ class Listing():
         self.isPrevious = False
 
     def is_furniture(self):
-
         for word in FURNITURE_WORDS:
             if word_is_in_string(word, self.description) or word_is_in_string(word, self.title):
                 self.isFurniture = True
