@@ -1,7 +1,7 @@
 import re
 
 UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
-                  'sale', 'sales', 'wholesale', 'wholesales', 'vente', 'ventes', 'rabais',
+                  'sale', 'sales', 'wholesale', 'wholesales', 'vente', 'ventes', 'rabais', 'deal',
                   'vendre', 'sell', 'selling', 
                   'louer', 'rent',
                   'price', 'prices', 'prix', 'cash',
@@ -14,6 +14,7 @@ UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
                   'soumission', 'quote',
                   'free shipping', 'fast shipping', 
                   'financement', 'financing',
+                  'paiement', 'payment',
                   'recherche']
 
 WANTED_WORDS = ['free', 'gratuit', 

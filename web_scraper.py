@@ -93,7 +93,7 @@ async def scroll_bottom_page(browser):
 
     try:
         browser.execute_script(SCRIPT_SCROLL_BOTTOM_PAGE)
-        await asyncio.sleep(0.3)
+        await asyncio.sleep(2)
 
     except Exception as e:
         print(f"An error occurred: {e}")
