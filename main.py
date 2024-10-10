@@ -22,12 +22,12 @@ class MyClient(discord.Client):
 
     async def setup_hook(self) -> None:
         # create the background task and run it in the background
-        self.bg_task = self.loop.create_task(self.my_background_task())
+        self.bg_task = self.loop.create_task(self.background_marketplace_scraping_task())
 
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
 
-    async def my_background_task(self):
+    async def background_marketplace_scraping_task(self):
         await self.wait_until_ready()
 
         miscChannel = client.get_channel(FREE_MISC_CHANNEL_ID)
@@ -71,4 +71,4 @@ class MyClient(discord.Client):
 
 
 client = MyClient(intents=discord.Intents.default())
-client.run(TOKEN, reconnect=True, log_level=50)
+client.run(TOKEN, reconnect=True, log_level=40)
