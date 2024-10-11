@@ -115,9 +115,11 @@ def extract_listings_informations(listing_links):
         lines = item['text'].split('\n')
 
         # get all segments of title (if used \n in it)
+        # only keep useful sections of title, discard the rest...
         title = ''
-        for i in range(1, len(lines)-1):
-            title = title + lines[i]
+        for line in lines:
+            if line != "Free" and line != "Pending" and line != '·' and "CA$" not in line and line != lines[-1]:
+                title = title + line + " "
 
         location = lines[-1]
         url = "https://www.facebook.com" + re.sub(r'\?.*', '', item['url'])

@@ -1,21 +1,22 @@
 import re
 
 UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
-                  'sale', 'sales', 'wholesale', 'wholesales', 'vente', 'ventes', 'rabais', 'deal',
-                  'vendre', 'sell', 'selling', 
-                  'louer', 'rent',
+                  'sale', 'sales', 'wholesale', 'wholesales', 'liquidation', 'liquidations', 'vente', 'ventes', 'rabais', 'deal',
+                  'vendre', 'vend', 'vends', 'vendons', 'vendez', 'vendent', 'sell', 'selling', 
+                  'louer', 'rent', 'location', 'locations',
                   'price', 'prices', 'prix', 'cash',
-                  'not free', 'pas gratuit',
-                  'negotiable', 'négociable', 'negociable',
-                  'échange', 'echange', 'échanger', 'echanger', 'trade', 'trades', 'trading', 'exchange', 'exchanges',
+                  'not free', 'pas gratuit', 'pas gratuits',
+                  'negotiable', 'negotiables', 'négociable', 'negociable', 'négociables', 'negociables',
+                  'échange', 'echange', 'échanges', 'echanges', 'échanger', 'echanger', 'trade', 'trades', 'trading', 'exchange', 'exchanges',
                   'achete', 'achète', 'achetes', 'achètes', 'acheter', 'buy', 'buying',
-                  'échangeable', 'echangeable', 'remboursable',
+                  'échangeable', 'échangeables', 'echangeables', 'echangeable', 'remboursable', 'remboursables',
                   'credit', 'crédit',
                   'soumission', 'quote',
-                  'free shipping', 'fast shipping', 
+                  'free shipping', 'fast shipping', 'livraison gratuite', 'livraison rapide',
                   'financement', 'financing',
-                  'paiement', 'payment',
-                  'recherche']
+                  'paiement', 'paiements', 'payment', 'payments', 'pay', 
+                  'cad', 'usd', 'taxes', 'taxe', 'tax',
+                  'recherche', 'recherches', 'recherchons', 'recherchez', 'recherchent']
 
 WANTED_WORDS = ['free', 'gratuit', 
                 'donner', 'à donner', 'donné', 'donne', 'give away', 'giving away']
