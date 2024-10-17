@@ -5,7 +5,7 @@ FURNITURE_WORDS = ['meuble', 'meubles', 'furniture', 'furnitures',
                    'tiroir', 'tiroirs', 'drawer', 'drawers',
                    'chaise', 'chaises', 'chair', 'chairs',
                    'commode', 'commodes', 'ottoman', 
-                   'sofa', 'sofas', 'divan', 'divans', 'fauteuil', 'fauteuils', 'canapé', 'canapés', 'sectionnelle', 'sectionnelles', 'sectional', 'couch', 'couchs',
+                   'sofa', 'sofas', 'divan', 'divans', 'fauteuil', 'fauteuils', 'canapé', 'canapés', 'canape', 'sectionnelle', 'sectionnelles', 'sectional', 'couch', 'couchs',
                    'bed', 'beds', 'lit', 'lits', 
                    'table', 'tables', 
                    'lampe', 'lampes', 'lamp', 'lamps',
@@ -19,6 +19,7 @@ FURNITURE_WORDS = ['meuble', 'meubles', 'furniture', 'furnitures',
                    'rideau', 'rideaux', 'curtain', 'curtains',
                    'coffre', 
                    'miroir', 'mirror',
+                   'piano',
                    'buffet']
 
 class Listing():

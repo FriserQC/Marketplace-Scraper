@@ -24,12 +24,9 @@ SCRIPT_CLOSE_LOCATION_MENU = 'document.getElementsByClassName("x1i10hfl xjbqb8w 
 
 SCRIPT_SCROLL_BOTTOM_PAGE = 'window.scrollTo(0, document.body.scrollHeight);'
 
+FACEBOOK_MARKETPLACE_LOCATION_ID = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
+
 async def open_chrome_to_marketplace_free_items_page():
-
-    chrome_install = ChromeDriverManager().install()
-
-    folder = os.path.dirname(chrome_install)
-    chromedriver_path = os.path.join(folder, "chromedriver.exe")
 
     options = webdriver.ChromeOptions() 
     options.add_argument("start-maximized")
@@ -42,10 +39,10 @@ async def open_chrome_to_marketplace_free_items_page():
     # Initialize Chrome WebDriver
     browser = webdriver.Chrome(
         options=options,
-        service = Service(chromedriver_path),
+        service=Service(ChromeDriverManager().install()),
     )
 
-    url = f"https://www.facebook.com/marketplace/{os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")}/free/?sortBy=creation_time_descend"
+    url = f"https://www.facebook.com/marketplace/{FACEBOOK_MARKETPLACE_LOCATION_ID}/free/?sortBy=creation_time_descend"
 
     browser.get(url)
 
