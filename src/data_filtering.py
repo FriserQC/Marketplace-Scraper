@@ -1,7 +1,7 @@
 import re
 
 UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
-                  'sale', 'sales', 'wholesale', 'wholesales', 'liquidation', 'liquidations', 'vente', 'ventes', 'rabais', 'deal',
+                  'sale', 'sales', 'wholesale', 'wholesales', 'clearance', 'clearances', 'liquidation', 'liquidations', 'vente', 'ventes', 'rabais', 'deal',
                   'vendre', 'vend', 'vends', 'vendons', 'vendez', 'vendent', 'sell', 'selling', 
                   'louer', 'rent', 'location', 'locations',
                   'price', 'prices', 'prix', 'cash',
