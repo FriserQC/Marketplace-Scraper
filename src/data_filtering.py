@@ -21,6 +21,31 @@ UNWANTED_WORDS = ['offre', 'offer', 'offres', 'offers',
 WANTED_WORDS = ['free', 'gratuit', 
                 'donner', 'à donner', 'donné', 'donne', 'give away', 'giving away']
 
+FURNITURE_WORDS = ['meuble', 'meubles', 'furniture', 'furnitures',
+                   'bureau', 'bureaux', 'desk', 'desks', 
+                   'tiroir', 'tiroirs', 'drawer', 'drawers', 'dresser', 
+                   'chaise', 'chaises', 'chair', 'chairs',
+                   'commode', 'commodes', 'ottoman', 
+                   'sofa', 'sofas', 'divan', 'divans', 'fauteuil', 'fauteuils', 'causeuse', 'causeuses', 'canapé', 'canapés', 'canape', 'sectionnelle', 'sectionnelles', 'sectional', 'couch', 'couchs',
+                   'bed', 'beds', 'lit', 'lits',
+                   'table', 'tables', 
+                   'lampe', 'lampes', 'lamp', 'lamps', 'luminaire', 'luminaires', 
+                   'sommier', 'sommeiler', 'matelas', 'box spring',
+                   'laveuse', 'washer', 'sècheuse', 'dryer',
+                   'frigo', 'frigidaire', 'fridge', 'refrigerator', 'congélateur',
+                   'cuisinière', 'cuisiniere', 
+                   'micro-onde', 'microonde', 'micro-ondes', 'microondes', 'microwave', 'microwaves',
+                   'bibliothèque', 'bibliotheque', 'bookcase', 
+                   'foyer', 'fireplace',
+                   'armoire', 'armoires', 'cabinet', 'classeur', 'classeurs', 'filiere', 'filieres', 'filière', 'filières',
+                   'tablette', 'tablettes', 'étagères', 'étagère',
+                   'rideau', 'rideaux', 'curtain', 'curtains',
+                   'coffre', 
+                   'miroir', 'mirror', 'cadres', 'frames',
+                   'piano',
+                   'piscine', 'pool', 'spa',
+                   'buffet']
+
 def is_unwanted_string(stringToCheck):
 
     stringToCheck = stringToCheck.lower().replace('\n', ' ').strip()
@@ -42,6 +67,14 @@ def is_unwanted_string(stringToCheck):
     #         remove = not word_is_in_string(word, stringToCheck)
     #         if remove == False:
     #             break
+
+    return False
+
+def is_furniture(title, description):
+
+    for word in FURNITURE_WORDS:
+            if word_is_in_string(word, description) or word_is_in_string(word, title):
+                return True
 
     return False
 

@@ -7,7 +7,7 @@ import os
 from bs4 import BeautifulSoup
 import re
 import asyncio
-from data_filtering import is_unwanted_string
+from data_filtering import is_unwanted_string, is_furniture
 from listing import Listing
 
 import os
@@ -178,7 +178,8 @@ async def extract_wanted_listings(previousListings) :
 
     # check if furniture
     for listing in listings:
-        listing.is_furniture()
+        if is_furniture(listing.title, listing.description):
+            listing.isFurniture = True
 
     return listings
 
