@@ -5,7 +5,7 @@ import asyncio
 import datetime
 
 import os
-from dotenv import load_dotenv, dotenv_values 
+from dotenv import load_dotenv 
 load_dotenv() 
 
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -66,8 +66,8 @@ class MyClient(discord.Client):
 
                 await asyncio.sleep(300)  # task runs every 5 minutes
 
-            except TimeoutError:
-                print("The scraper operation took too long, gonna retry")
+            except Exception as e:
+                print(f"The scraper operation took too long, gonna retry : {e}")
 
 
 client = MyClient(intents=discord.Intents.default())

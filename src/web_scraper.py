@@ -11,7 +11,7 @@ from data_filtering import is_unwanted_string, is_furniture
 from listing import Listing
 
 import os
-from dotenv import load_dotenv, dotenv_values 
+from dotenv import load_dotenv 
 load_dotenv() 
 
 LISTING_DESCRIPTION_CLASS_NAME = 'xz9dl7a x4uap5 xsag5q8 xkhd6sd x126k92a'
