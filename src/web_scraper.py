@@ -131,30 +131,35 @@ def extract_listings_informations(browser):
 
     return extracted_data
 
-async def extract_description_listings(listings, browser):
+async def extract_description_and_category_listings(listings, browser):
 
     for listing in listings:
         if listing.isPrevious == True :
             continue
 
-        try:
-            browser.get(listing.url)
+        browser.get(listing.url)
+        html = browser.page_source
+        soup = BeautifulSoup(html, 'html.parser')
 
-            html = browser.page_source
-            soup = BeautifulSoup(html, 'html.parser')
+        try:
             description = soup.find('div', {"class": LISTING_DESCRIPTION_CLASS_NAME}).text
             listing.description = description
-            title = soup.find_all('title')[0].text
 
-            firstIndex = title.find(' - ') + 3
-            lastIndex = title.find(' - ', firstIndex)
+        except Exception as e:
+            print(f"Description not found : {e}")
+            pass
+
+        try:
+            title = soup.find('title').text
+            lastIndex = title.rfind(' - ')
+            firstIndex = title.rfind(' - ', None, lastIndex) + 3
 
             if firstIndex > 0 and lastIndex > 0 and lastIndex > firstIndex:
                 category = title[firstIndex : lastIndex]
                 listing.category = category
 
         except Exception as e:
-            print(f"Description not found : {e}")
+            print(f"Category not found : {e}")
             pass
 
     browser.quit()
@@ -177,7 +182,7 @@ async def extract_wanted_listings(previousListings) :
         if any(listingsUrl in listing.url for listingsUrl in previousListings):
             listing.isPrevious = True
 
-    listings = await extract_description_listings(listings, browser)
+    listings = await extract_description_and_category_listings(listings, browser)
 
     # mark listings with description that contain unwanted words...
     for listing in listings:
