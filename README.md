@@ -16,6 +16,7 @@ You need a discord bot that can send messages on channels.
         <li>FACEBOOK_MARKETPLACE_LOCATION_ID = <em>The facebook marketplace Id for your city</em> (See image below for exemple)</li>
     </ol> 
   <li>Run command following command to install requirements : pip install -r requirements.txt</li>
+  <li>If you want to use a vitrual environment, use this one : virtualenv .venv && source .venv/bin/activate && pip install -r requirements.txt</li>
 </ol> 
 
 <br>
@@ -27,7 +28,7 @@ Select the city of your choosing the marketplace and copy the value that is high
 
 ### Future Potential Features :
 <ol>
-  <li>test unwanted word followed by "." or other characters</li>
+  <li>Check categories and send to "wanted" channel</li>
   <li>Create install executable that auto install requirements and runs in background</li>
   <li>Add listing categorisations (outdoors, tools, computers, etc.) with AI (image or text based) </li>
 </ol> 
