@@ -1,5 +1,5 @@
 class Listing:
-    """Represents a listing with title, location, URL, category, description, and status flags."""
+    # Represents a facebook marketplace listing with title, location, URL, category, description, etc.
 
     def __init__(self, title, location, url):
         self.title = title

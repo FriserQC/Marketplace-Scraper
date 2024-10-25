@@ -2,7 +2,6 @@ import os
 import re
 import asyncio
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
@@ -26,7 +25,7 @@ SCRIPT_SCROLL_BOTTOM_PAGE = 'window.scrollTo(0, document.body.scrollHeight);'
 FACEBOOK_MARKETPLACE_LOCATION_ID = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
 
 async def open_chrome_to_marketplace_free_items_page():
-    """Open Chrome browser to the Facebook Marketplace free items page."""
+    # Open Chrome browser to the Facebook Marketplace free items page
     options = webdriver.ChromeOptions()
     options.add_argument("start-maximized")
     options.page_load_strategy = 'eager'
@@ -44,7 +43,7 @@ async def open_chrome_to_marketplace_free_items_page():
     return browser
 
 async def close_log_in_popup(browser):
-    """Close the login popup if it appears."""
+    # Close the login popup if it appears
     await asyncio.sleep(2)
     try:
         close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
@@ -59,7 +58,7 @@ async def close_log_in_popup(browser):
     return browser
 
 async def change_location_radius(browser):
-    """Change the location radius in the marketplace settings."""
+    # Change the location radius in the marketplace settings
     await asyncio.sleep(2)
     try:
         browser.execute_script(SCRIPT_OPEN_LOCATION_MENU)
@@ -74,7 +73,7 @@ async def change_location_radius(browser):
         print(f"Could not change location radius! Error: {e}")
 
 async def scroll_bottom_page(browser):
-    """Scroll to the bottom of the page."""
+    # Scroll to the bottom of the page
     try:
         browser.execute_script(SCRIPT_SCROLL_BOTTOM_PAGE)
         await asyncio.sleep(2)
@@ -82,7 +81,7 @@ async def scroll_bottom_page(browser):
         print(f"An error occurred: {e}")
 
 def extract_listings_information(browser):
-    """Extract listing information from the page."""
+    # Extract listing information from the page
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     links = soup.find_all('a', {"class": LISTING_CLASS_NAME})
@@ -103,7 +102,7 @@ def extract_listings_information(browser):
     return extracted_data
 
 async def extract_description_and_category_listings(listings, browser):
-    """Extract descriptions and categories from the listings."""
+    # Extract descriptions and categories from the listings
     for listing in listings:
         if listing.is_previous:
             continue
@@ -132,7 +131,7 @@ async def extract_description_and_category_listings(listings, browser):
     return listings
 
 async def extract_wanted_listings(previous_listings):
-    """Extract listings that are wanted from the marketplace."""
+    # Extract listings that are wanted from the marketplace
     browser = await open_chrome_to_marketplace_free_items_page()
     browser = await close_log_in_popup(browser)
     await change_location_radius(browser)

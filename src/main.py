@@ -3,7 +3,6 @@ import datetime
 import asyncio
 from dotenv import load_dotenv
 import discord
-from discord.ext import tasks
 from web_scraper import extract_wanted_listings
 
 load_dotenv()
