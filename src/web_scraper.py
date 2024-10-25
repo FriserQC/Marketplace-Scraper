@@ -96,11 +96,15 @@ async def scroll_bottom_page(browser):
         print(f"An error occurred: {e}")
         pass
 
-def extract_listings_informations(listing_links):
+def extract_listings_informations(browser):
+
+    html = browser.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    links = soup.find_all('a', {"class": LISTING_CLASS_NAME})
 
     listing_data = []
 
-    for listing_link in listing_links:
+    for listing_link in links:
         url = listing_link.get('href')
         text = '\n'.join(listing_link.stripped_strings)
         #image = listing_link.find('img')["src"]
@@ -139,8 +143,16 @@ async def extract_description_listings(listings, browser):
             html = browser.page_source
             soup = BeautifulSoup(html, 'html.parser')
             description = soup.find('div', {"class": LISTING_DESCRIPTION_CLASS_NAME}).text
-
             listing.description = description
+            title = soup.find_all('title')[0].text
+
+            firstIndex = title.find(' - ') + 3
+            lastIndex = title.find(' - ', firstIndex)
+
+            if firstIndex > 0 and lastIndex > 0 and lastIndex > firstIndex:
+                category = title[firstIndex : lastIndex]
+                listing.category = category
+
         except Exception as e:
             print(f"Description not found : {e}")
             pass
@@ -156,11 +168,7 @@ async def extract_wanted_listings(previousListings) :
     await change_location_radius(browser)
     await scroll_bottom_page(browser)
     
-    html = browser.page_source
-    soup = BeautifulSoup(html, 'html.parser')
-    links = soup.find_all('a', {"class": LISTING_CLASS_NAME})
-
-    listings = extract_listings_informations(links)
+    listings = extract_listings_informations(browser)
 
     # mark listings from previous listings or that have titles containing unwanted words...
     for listing in listings:

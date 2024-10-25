@@ -4,6 +4,7 @@ class Listing():
         self.title = title
         self.location = location
         self.url = url
+        self.category = ""
         self.description = ""
         self.isFurniture = False
         self.isUnwanted = False

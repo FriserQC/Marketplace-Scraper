@@ -44,7 +44,7 @@ class MyClient(discord.Client):
                     listings = await extract_wanted_listings(self.previousListings)
                     for listing in listings:
                         if listing.isPrevious == False:
-                            message = (f'Location: {listing.location.strip()}\nURL: {listing.url}\n')
+                            message = (f'Location: {listing.location.strip()}\nCatégorie: {listing.category}\nURL: {listing.url}\n')
 
                             if listing.isUnwanted == True:
                                 await unwantedChannel.send(message)
