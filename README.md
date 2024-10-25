@@ -16,7 +16,8 @@ You need a discord bot that can send messages on channels.
         <li>FACEBOOK_MARKETPLACE_LOCATION_ID = <em>The facebook marketplace Id for your city</em> (See image below for exemple)</li>
     </ol> 
   <li>Run command following command to install requirements : pip install -r requirements.txt</li>
-  <li>If you want to use a vitrual environment, use this one : virtualenv .venv && source .venv/bin/activate && pip install -r requirements.txt</li>
+  <li>If you want to use a vitrual environment, use this one : virtualenv .venv && source .venv/bin/activate && pip install -r requirements.txt AND 
+  If you are on Winodws : python -m venv .venv ; .\.venv\Scripts\activate ; pip install -r requirements.txt</li>
 </ol> 
 
 <br>
