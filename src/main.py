@@ -1,27 +1,26 @@
-import discord
-from discord.ext import tasks 
-from web_scraper import extract_wanted_listings
-import asyncio
-import datetime
-
 import os
-from dotenv import load_dotenv 
-load_dotenv() 
+import datetime
+import asyncio
+from dotenv import load_dotenv
+import discord
+from discord.ext import tasks
+from web_scraper import extract_wanted_listings
+
+load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
-FREE_MISC_CHANNEL_ID = (int)(os.getenv("FREE_MISC_CHANNEL_ID"))
-FREE_FURNITURE_CHANNEL_ID = (int)(os.getenv("FREE_FURNITURE_CHANNEL_ID"))
-FREE_UNWANTED_CHANNEL_ID = (int)(os.getenv("FREE_UNWANTED_CHANNEL_ID"))
+FREE_MISC_CHANNEL_ID = int(os.getenv("FREE_MISC_CHANNEL_ID"))
+FREE_FURNITURE_CHANNEL_ID = int(os.getenv("FREE_FURNITURE_CHANNEL_ID"))
+FREE_UNWANTED_CHANNEL_ID = int(os.getenv("FREE_UNWANTED_CHANNEL_ID"))
 MAX_NUMBER_OF_PREVIOUS_LISTINGS = 500
 
 class MyClient(discord.Client):
-
     def __init__(self, *args, **kwargs):
-        self.previousListings = []
+        self.previous_listings = []
         super().__init__(*args, **kwargs)
 
     async def setup_hook(self) -> None:
-        # create the background task and run it in the background
+        # Create the background task and run it in the background
         self.bg_task = self.loop.create_task(self.background_marketplace_scraping_task())
 
     async def on_ready(self):
@@ -30,45 +29,44 @@ class MyClient(discord.Client):
     async def background_marketplace_scraping_task(self):
         await self.wait_until_ready()
 
-        miscChannel = client.get_channel(FREE_MISC_CHANNEL_ID)
-        furnitureChannel = client.get_channel(FREE_FURNITURE_CHANNEL_ID)
-        unwantedChannel = client.get_channel(FREE_UNWANTED_CHANNEL_ID)
-        
-        while not self.is_closed():
-            print("Start : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
+        misc_channel = self.get_channel(FREE_MISC_CHANNEL_ID)
+        furniture_channel = self.get_channel(FREE_FURNITURE_CHANNEL_ID)
+        unwanted_channel = self.get_channel(FREE_UNWANTED_CHANNEL_ID)
 
-            # run task, if takes more than 15 minutes gonna cancel and retry
+        while not self.is_closed():
+            print("Start: " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
+
+            # Run task; if it takes more than 15 minutes, cancel and retry
             try:
                 async with asyncio.timeout(900):
-                    # sends every message
-                    listings = await extract_wanted_listings(self.previousListings)
+                    listings = await extract_wanted_listings(self.previous_listings)
                     for listing in listings:
-                        if listing.isPrevious == False:
-                            message = (f'Location: {listing.location.strip()}\nCategory: {listing.category}\nURL: {listing.url}\n')
+                        if not listing.is_previous:
+                            message = (f'Location: {listing.location.strip()}\n'
+                                       f'Category: {listing.category}\n'
+                                       f'URL: {listing.url}\n')
 
-                            if listing.isUnwanted == True:
-                                await unwantedChannel.send(message)
-                            elif listing.isFurniture == True:
-                                await furnitureChannel.send(message)
-                            else :
-                                await miscChannel.send(message)
-                            self.previousListings.append(listing.url)
+                            if listing.is_unwanted:
+                                await unwanted_channel.send(message)
+                            elif listing.is_furniture:
+                                await furniture_channel.send(message)
+                            else:
+                                await misc_channel.send(message)
+                            self.previous_listings.append(listing.url)
 
-                    print("number of previous listings : " + str(len(self.previousListings)))
+                    print(f'Number of previous listings: {len(self.previous_listings)}')
 
-                    # clear previous data 
-                    if len(self.previousListings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS:
-                        while (len(self.previousListings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS):
-                            self.previousListings.pop(0)
+                    # Clear previous data
+                    while len(self.previous_listings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS:
+                        self.previous_listings.pop(0)
 
-                    print("End : " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
+                    print("End: " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
                     print('------')
 
-                await asyncio.sleep(300)  # task runs every 5 minutes
+                await asyncio.sleep(300)  # Task runs every 5 minutes
 
             except Exception as e:
-                print(f"The scraper operation took too long, gonna retry : {e}")
-
+                print(f'The scraper operation took too long, going to retry: {e}')
 
 client = MyClient(intents=discord.Intents.default())
 client.run(TOKEN, reconnect=True, log_level=40)
