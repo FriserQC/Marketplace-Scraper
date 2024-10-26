@@ -12,7 +12,6 @@ from listing import Listing
 
 load_dotenv()
 
-LISTING_DESCRIPTION_CLASS_NAME = 'xz9dl7a x4uap5 xsag5q8 xkhd6sd x126k92a'
 LISTING_CLASS_NAME = 'x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1sur9pj xkrqix3 x1lku1pv'
 
 SCRIPT_OPEN_LOCATION_MENU = 'document.getElementsByClassName("x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x1ypdohk xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1o1ewxj x3x9cwd x1e5q0jg x13rtm0m x87ps6o x1lku1pv x1a2a7pz x9f619 x3nfvp2 xdt5ytf xl56j7k x1n2onr6 xh8yej3")[1].click();'
@@ -112,20 +111,21 @@ async def extract_listings_description_and_category(listings, browser):
         soup = BeautifulSoup(html, 'html.parser')
 
         try:
-            description = soup.find('div', {"class": LISTING_DESCRIPTION_CLASS_NAME}).text
+            description = soup.find('meta', attrs={'name':'description'})['content']
             listing.description = description
         except Exception as e:
-            print(f"Description not found: {e}")
+            print(f"Description not found or not existing: {e}")
 
-        try:
-            title = soup.find('title').text
-            last_index = title.rfind(' - ')
-            first_index = title.rfind(' - ', None, last_index) + 3
-            if first_index > 0 and last_index > first_index:
-                category = title[first_index:last_index]
-                listing.category = category
-        except Exception as e:
-            print(f"Category not found: {e}")
+        if listing.category is None or listing.category == "":
+            try:
+                title = soup.find('title').text
+                last_index = title.rfind(' - ')
+                first_index = title.rfind(' - ', None, last_index) + 3
+                if first_index > 0 and last_index > first_index:
+                    category = title[first_index:last_index]
+                    listing.category = category
+            except Exception as e:
+                print(f"Category not found: {e}")
 
     browser.quit()
     return listings
