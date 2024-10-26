@@ -4,7 +4,7 @@
 This program scrapes Facebook Marketplace for free items in your area and sends the listings on a discord server.
 You need a discord bot that can send messages on channels.
 
-### To run whis program you first need to :
+#### To run whis program you first need to :
 <ol>
   <li>Have an installed version of the Google Chrome web browser</li>
   <li>Create your own .env file with the parameters :</li>
@@ -17,9 +17,9 @@ You need a discord bot that can send messages on channels.
     </ol> 
   <li>Run the following command to install requirements : pip install -r requirements.txt</li>
   <ol>
-        <li>On Windows : python -m venv .venv ; .\.venv\Scripts\activate ; pip install -r requirements.txt</li>
-        <li>Other OS : virtualenv .venv && source .venv/bin/activate && pip install -r requirements.txt</li>
-    </ol> 
+    <li>On Windows : python -m venv .venv ; .\.venv\Scripts\activate ; pip install -r requirements.txt</li>
+    <li>Other OS : virtualenv .venv && source .venv/bin/activate && pip install -r requirements.txt</li>
+  </ol> 
 </ol> 
 
 <br>
