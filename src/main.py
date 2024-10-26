@@ -3,7 +3,7 @@ import datetime
 import asyncio
 from dotenv import load_dotenv
 import discord
-from web_scraper import extract_wanted_listings
+from web_scraper import scrape_wanted_listings
 
 load_dotenv()
 
@@ -38,7 +38,7 @@ class MyClient(discord.Client):
             # Run task; if it takes more than 15 minutes, cancel and retry
             try:
                 async with asyncio.timeout(900):
-                    listings = await extract_wanted_listings(self.previous_listings)
+                    listings = await scrape_wanted_listings(self.previous_listings)
                     for listing in listings:
                         if not listing.is_previous:
                             message = (f'Location: {listing.location.strip()}\n'

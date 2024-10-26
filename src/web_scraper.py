@@ -58,7 +58,7 @@ async def close_log_in_popup(browser):
     return browser
 
 async def change_location_radius(browser):
-    # Change the location radius in the marketplace settings
+    # Change the location radius in marketplace settings
     await asyncio.sleep(2)
     try:
         browser.execute_script(SCRIPT_OPEN_LOCATION_MENU)
@@ -80,8 +80,8 @@ async def scroll_bottom_page(browser):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def extract_listings_information(browser):
-    # Extract listing information from the page
+def extract_listings_informations(browser):
+    # Extract listing's informations from the page
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     links = soup.find_all('a', {"class": LISTING_CLASS_NAME})
@@ -101,8 +101,8 @@ def extract_listings_information(browser):
 
     return extracted_data
 
-async def extract_description_and_category_listings(listings, browser):
-    # Extract descriptions and categories from the listings
+async def extract_listings_description_and_category(listings, browser):
+    # Extract descriptions and categories from the listings pages
     for listing in listings:
         if listing.is_previous:
             continue
@@ -130,14 +130,14 @@ async def extract_description_and_category_listings(listings, browser):
     browser.quit()
     return listings
 
-async def extract_wanted_listings(previous_listings):
-    # Extract listings that are wanted from the marketplace
+async def scrape_wanted_listings(previous_listings):
+    # Scrape listings that are wanted from marketplace
     browser = await open_chrome_to_marketplace_free_items_page()
     browser = await close_log_in_popup(browser)
     await change_location_radius(browser)
     await scroll_bottom_page(browser)
 
-    listings = extract_listings_information(browser)
+    listings = extract_listings_informations(browser)
 
     for listing in listings:
         if is_unwanted_string(listing.title):
@@ -145,7 +145,7 @@ async def extract_wanted_listings(previous_listings):
         if any(previous_url in listing.url for previous_url in previous_listings):
             listing.is_previous = True
 
-    listings = await extract_description_and_category_listings(listings, browser)
+    listings = await extract_listings_description_and_category(listings, browser)
 
     for listing in listings:
         if is_unwanted_string(listing.description):
