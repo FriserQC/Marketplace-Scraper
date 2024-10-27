@@ -17,7 +17,7 @@ MAX_NUMBER_OF_PREVIOUS_LISTINGS = 500
 
 WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Entertainment', 'Sporting Goods']
 UNWANTED_CATEGORIES = ['Vehicles', 'Property Rentals', 'Home Sales']
-HOME_CATEGORIES = ['Home Goods', 'Home Improvement Supplies', 'Garden & Outdoor', 'Pet Supplies', 'Office Supplies', 'Family']
+HOME_CATEGORIES = ['Home Goods', 'Home Improvement Supplies', 'Garden & Outdoor', 'Pet Supplies', 'Office Supplies', 'Family', 'Toys & Games']
 
 class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -54,7 +54,7 @@ class MyClient(discord.Client):
                                        f'Specific Category: {listing.specific_category}\n'
                                        f'URL: {listing.url}\n')
 
-                            if listing.is_unwanted or any(listing.general_category == word for word in UNWANTED_CATEGORIES) or listing.specific_categories == "Cars & Trucks":
+                            if listing.is_unwanted or any(listing.general_category == word for word in UNWANTED_CATEGORIES) or listing.specific_category == "Cars & Trucks":
                                 await unwanted_channel.send(message)
 
                             elif any(listing.general_category == word for word in WANTED_CATEGORIES) or "Outdoor" in listing.specific_category: 
@@ -82,7 +82,7 @@ class MyClient(discord.Client):
                 await asyncio.sleep(300)  # Task runs every 5 minutes
 
             except Exception as e:
-                print(f'The scraper operation took too long, going to retry: {e}')
+                print(f'The scraper operation took too long or had an error, going to retry: {e}')
 
 client = MyClient(intents=discord.Intents.default())
 client.run(TOKEN, reconnect=True, log_level=40)
