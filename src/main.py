@@ -15,6 +15,10 @@ FREE_HOME_CHANNEL_ID = int(os.getenv("FREE_HOME_CHANNEL_ID"))
 FREE_UNWANTED_CHANNEL_ID = int(os.getenv("FREE_UNWANTED_CHANNEL_ID"))
 MAX_NUMBER_OF_PREVIOUS_LISTINGS = 500
 
+WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Entertainment', 'Sporting Goods']
+UNWANTED_CATEGORIES = ['Vehicles', 'Property Rentals', 'Home Sales']
+HOME_CATEGORIES = ['Home Goods', 'Home Improvement Supplies', 'Garden & Outdoor', 'Pet Supplies', 'Office Supplies', 'Family']
+
 class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
         self.previous_listings = []
@@ -50,14 +54,18 @@ class MyClient(discord.Client):
                                        f'Specific Category: {listing.specific_category}\n'
                                        f'URL: {listing.url}\n')
 
-                            if listing.is_unwanted or listing.general_category == "Vehicles" or listing.general_category == "Property Rentals" or listing.general_category == "Home Sales":
+                            if listing.is_unwanted or any(listing.general_category == word for word in UNWANTED_CATEGORIES) or listing.specific_categories == "Cars & Trucks":
                                 await unwanted_channel.send(message)
-                            elif listing.general_category == "Electronics" or listing.general_category == "Musical Instruments" or listing.general_category == "Toys & Games" or listing.general_category == "Entertainment" or listing.general_category == "Sporting Goods": 
+
+                            elif any(listing.general_category == word for word in WANTED_CATEGORIES) or "Outdoor" in listing.specific_category: 
                                 await wanted_channel.send(message)
+
                             elif listing.is_furniture:
                                 await furniture_channel.send(message)
-                            elif listing.general_category == "Home Goods" or listing.general_category == "Home Improvement Supplies" or listing.general_category == "Garden & Outdoor" or listing.general_category == "Pet Supplies" or listing.general_category == "Office Supplies" or listing.general_category == "Family":
+
+                            elif any(listing.general_category == word for word in HOME_CATEGORIES):
                                 await home_channel.send(message)
+
                             else:
                                 await misc_channel.send(message)
                             self.previous_listings.append(listing.url)
