@@ -34,5 +34,4 @@ Select the city of your choosing the marketplace and copy the value that is high
 ### Future Potential Features :
 <ol>
   <li>Create install executable that auto install requirements and runs in background (maybe docker for raspberry pi)</li>
-  <li>Add listing categorisations (outdoors, tools, computers, etc.) with AI (image or text based) </li>
 </ol> 
