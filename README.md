@@ -34,4 +34,5 @@ Select the city of your choosing the marketplace and copy the value that is high
 ### Future Potential Features :
 <ol>
   <li>Create install executable that auto install requirements and runs in background (maybe docker for raspberry pi)</li>
+  <li>Reverse image finder on google, and find price of product (send message to different channel when profit is high)</li>
 </ol> 
