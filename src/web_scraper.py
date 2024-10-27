@@ -49,6 +49,7 @@ async def close_log_in_popup(browser):
 
 async def scroll_bottom_page(browser):
     # Scroll to the bottom of the page
+    await asyncio.sleep(2)
     try:
         browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
         await asyncio.sleep(2)
@@ -59,7 +60,7 @@ def extract_listings_informations(browser):
     # Extract listing's informations from the page
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
-    links = soup.find_all('a', href=re.compile("/marketplace/item/"))
+    links = soup.find_all('a', attrs={'href':re.compile(r'\/marketplace\/item\/')})
 
     listing_data = [
         {'text': '\n'.join(listing_link.stripped_strings), 'url': listing_link.get('href')}
@@ -92,16 +93,21 @@ async def extract_listings_description_and_category(listings, browser):
         except Exception as e:
             print(f"Description not found or not existing: {e}")
 
-        if listing.category is None or listing.category == "":
-            try:
-                title = soup.find('title').text
-                last_index = title.rfind(' - ')
-                first_index = title.rfind(' - ', None, last_index) + 3
-                if first_index > 0 and last_index > first_index:
-                    category = title[first_index:last_index]
-                    listing.category = category
-            except Exception as e:
-                print(f"Category not found: {e}")
+        try:
+            category = soup.find('a', attrs={'href':re.compile(r'\/marketplace\/[0-9]+\/[\w-]+\/')})
+            listing.general_category = category.text
+        except Exception as e:
+            print(f"General category not found or not existing: {e}")
+
+        try:
+            title = soup.find('title').text
+            last_index = title.rfind(' - ')
+            first_index = title.rfind(' - ', None, last_index) + 3
+            if first_index > 0 and last_index > first_index:
+                category = title[first_index:last_index]
+                listing.specific_category = category
+        except Exception as e:
+            print(f"Specific category not found or not existing: {e}")
 
     browser.quit()
     return listings

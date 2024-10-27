@@ -42,7 +42,8 @@ class MyClient(discord.Client):
                     for listing in listings:
                         if not listing.is_previous:
                             message = (f'Location: {listing.location.strip()}\n'
-                                       f'Category: {listing.category}\n'
+                                       f'General Category: {listing.general_category}\n'
+                                       f'Specific Category: {listing.specific_category}\n'
                                        f'URL: {listing.url}\n')
 
                             if listing.is_unwanted:

@@ -5,7 +5,8 @@ class Listing:
         self.title = title
         self.location = location
         self.url = url
-        self.category = ""
+        self.general_category = ""
+        self.specific_category = ""
         self.description = ""
         self.is_furniture = False
         self.is_unwanted = False
