@@ -8,8 +8,10 @@ from web_scraper import scrape_wanted_listings
 load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
+FREE_WANTED_CHANNEL_ID = int(os.getenv("FREE_WANTED_CHANNEL_ID"))
 FREE_MISC_CHANNEL_ID = int(os.getenv("FREE_MISC_CHANNEL_ID"))
 FREE_FURNITURE_CHANNEL_ID = int(os.getenv("FREE_FURNITURE_CHANNEL_ID"))
+FREE_HOME_CHANNEL_ID = int(os.getenv("FREE_HOME_CHANNEL_ID"))
 FREE_UNWANTED_CHANNEL_ID = int(os.getenv("FREE_UNWANTED_CHANNEL_ID"))
 MAX_NUMBER_OF_PREVIOUS_LISTINGS = 500
 
@@ -28,8 +30,10 @@ class MyClient(discord.Client):
     async def background_marketplace_scraping_task(self):
         await self.wait_until_ready()
 
+        wanted_channel = self.get_channel(FREE_WANTED_CHANNEL_ID)
         misc_channel = self.get_channel(FREE_MISC_CHANNEL_ID)
         furniture_channel = self.get_channel(FREE_FURNITURE_CHANNEL_ID)
+        home_channel = self.get_channel(FREE_HOME_CHANNEL_ID)
         unwanted_channel = self.get_channel(FREE_UNWANTED_CHANNEL_ID)
 
         while not self.is_closed():
@@ -46,10 +50,14 @@ class MyClient(discord.Client):
                                        f'Specific Category: {listing.specific_category}\n'
                                        f'URL: {listing.url}\n')
 
-                            if listing.is_unwanted:
+                            if listing.is_unwanted or listing.general_category == "Vehicles" or listing.general_category == "Property Rentals" or listing.general_category == "Home Sales":
                                 await unwanted_channel.send(message)
+                            elif listing.general_category == "Electronics" or listing.general_category == "Musical Instruments" or listing.general_category == "Toys & Games" or listing.general_category == "Entertainment" or listing.general_category == "Sporting Goods": 
+                                await wanted_channel.send(message)
                             elif listing.is_furniture:
                                 await furniture_channel.send(message)
+                            elif listing.general_category == "Home Goods" or listing.general_category == "Home Improvement Supplies" or listing.general_category == "Garden & Outdoor" or listing.general_category == "Pet Supplies" or listing.general_category == "Office Supplies" or listing.general_category == "Family":
+                                await home_channel.send(message)
                             else:
                                 await misc_channel.send(message)
                             self.previous_listings.append(listing.url)
