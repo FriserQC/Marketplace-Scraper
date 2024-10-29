@@ -4,7 +4,7 @@ UNWANTED_WORDS = [
     'offre', 'offer', 'offres', 'offers', 
     'vente', 'ventes', 'vendre', 'vends', 'vendons', 'vendez', 'vendent', 
     'sale', 'sales', 'liquidation', 'liquidations', 'solde', 'soldes',
-    'rabais', 'deal', 'promotion', 'promotions',
+    'rabais', 'deal', 'promotion', 'promotions', 'discount', 'discounts',
     'buy', 'buying', 'acheter', 'achete', 'achète', 'achetes', 'achètes', 
     'sell', 'selling', 
     'louer', 'rent', 'location', 'locations', 
@@ -22,7 +22,7 @@ UNWANTED_WORDS = [
     'negotiable', 'negociable', 'négociable', 
     'recherche', 'recherches', 'recherchons', 'recherchez', 'recherchent',
     'échange', 'echange', 'échanges', 'echanges', 'échanger', 
-    'exchange', 'exchanges', 
+    'exchange', 'exchanges', 'trade', 'trades',
     'soumission', 'quote'
 ]
 
