@@ -14,7 +14,7 @@ load_dotenv()
 
 FACEBOOK_MARKETPLACE_LOCATION_ID = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
 
-WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Entertainment', 'Sporting Goods']
+WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Sporting Goods']
 UNWANTED_CATEGORIES = ['Vehicles', 'Property Rentals', 'Home Sales']
 HOME_CATEGORIES = ['Home Goods', 'Home Improvement Supplies', 'Garden & Outdoor', 'Pet Supplies', 'Office Supplies', 'Family', 'Toys & Games']
 
@@ -92,12 +92,6 @@ async def extract_listings_description_and_category(listings, browser):
         soup = BeautifulSoup(html, 'html.parser')
 
         try:
-            description = soup.find('meta', attrs={'name':'description'})['content']
-            listing.description = description
-        except Exception as e:
-            print(f"Description not found or not existing for this listing {listing.url} : {e}")
-
-        try:
             category = soup.find('a', attrs={'href':re.compile(r'\/marketplace\/[0-9]+\/[\w-]+\/')})
             listing.general_category = category.text
         except Exception as e:
@@ -112,6 +106,25 @@ async def extract_listings_description_and_category(listings, browser):
                 listing.specific_category = category
         except Exception as e:
             print(f"Specific category not found or not existing for this listing {listing.url} : {e}")
+
+        try:
+            description_text = ""
+            description = soup.find('meta', attrs={'name':'description'})['content']
+            description_text = str(description)
+
+            if (int(len(description_text)) > 10):
+                escaped_text = re.escape(description_text[:-3])
+                pattern = re.compile(escaped_text, re.MULTILINE | re.DOTALL)
+                complete_description = soup.find('span', string=pattern)
+                if (complete_description is not None):
+                    if int(len((complete_description.text)) > int(len(description_text))):
+                        description_text = str(complete_description.text)
+                
+            listing.description = description_text
+
+        except Exception as e:
+            print(f"Description not found or not existing for this listing {listing.url} : {e}")
+            listing.description = description_text
 
     browser.quit()
     return listings
