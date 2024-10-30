@@ -91,13 +91,13 @@ async def extract_listings_description_and_category(listings, browser):
             description = soup.find('meta', attrs={'name':'description'})['content']
             listing.description = description
         except Exception as e:
-            print(f"Description not found or not existing: {e}")
+            print(f"Description not found or not existing for this listing {listing.url} : {e}")
 
         try:
             category = soup.find('a', attrs={'href':re.compile(r'\/marketplace\/[0-9]+\/[\w-]+\/')})
             listing.general_category = category.text
         except Exception as e:
-            print(f"General category not found or not existing: {e}")
+            print(f"General category not found or not existing for this listing {listing.url} : {e}")
 
         try:
             title = soup.find('title').text
@@ -107,7 +107,7 @@ async def extract_listings_description_and_category(listings, browser):
                 category = title[first_index:last_index]
                 listing.specific_category = category
         except Exception as e:
-            print(f"Specific category not found or not existing: {e}")
+            print(f"Specific category not found or not existing for this listing {listing.url} : {e}")
 
     browser.quit()
     return listings

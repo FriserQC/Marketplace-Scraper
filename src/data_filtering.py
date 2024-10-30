@@ -11,6 +11,7 @@ UNWANTED_WORDS = [
     'price', 'prices', 'prix', 
     'cash', 'paiement', 'paiements', 'payment', 'payments', 'pay', 
     'taxes', 'taxe', 'tax', 
+    'rate', 'rates',
     'not free', 'pas gratuit', 'pas gratuits', 
     'remboursable', 'remboursables', 
     'financement', 'financing', 'finance', 
@@ -18,12 +19,13 @@ UNWANTED_WORDS = [
     'free shipping', 'fast shipping', 'free delivery', 'fast delivery', 'delivery available',
     'livraison gratuite', 'livraison rapide', 
     'installation', 'service', 'services',
+    'commande', 'commandes', 'order', 'orders',
     'lifetime warranty',
     'negotiable', 'negociable', 'négociable', 
     'recherche', 'recherches', 'recherchons', 'recherchez', 'recherchent',
     'échange', 'echange', 'échanges', 'echanges', 'échanger', 
     'exchange', 'exchanges', 'trade', 'trades',
-    'soumission', 'quote'
+    'soumission', 'quote', 'estimé', 'estimés'
 ]
 
 FURNITURE_WORDS = [
