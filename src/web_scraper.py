@@ -147,7 +147,7 @@ async def scrape_wanted_listings(previous_listings):
     listings = await extract_listings_description_and_category(listings, browser)
 
     for listing in listings:
-        if is_unwanted_string(listing.description) or any(listing.general_category == word for word in UNWANTED_CATEGORIES) or listing.specific_category == "Cars & Trucks":
+        if is_unwanted_string(listing.description) or any(listing.general_category == word for word in UNWANTED_CATEGORIES) or listing.specific_category == "Cars & Trucks" or listing.specific_category == "Commercial Trucks":
             listing.is_unwanted = True
         elif is_furniture(listing.title) or is_furniture(listing.description) or is_furniture(listing.general_category) or is_furniture(listing.specific_category):
             listing.is_furniture = True
