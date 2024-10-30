@@ -8,6 +8,8 @@ class Listing:
         self.general_category = ""
         self.specific_category = ""
         self.description = ""
-        self.is_furniture = False
         self.is_unwanted = False
+        self.is_wanted = False
+        self.is_home = False
+        self.is_furniture = False
         self.is_previous = False

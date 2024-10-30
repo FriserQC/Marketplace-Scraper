@@ -85,9 +85,9 @@ def is_unwanted_string(string_to_check):
     # Check for unwanted words
     return any(word_is_in_string(word, string_to_check) for word in UNWANTED_WORDS)
 
-def is_furniture(title, description):
-    # Determine if the title or description contains furniture-related words
-    return any(word_is_in_string(word, description) or word_is_in_string(word, title) for word in FURNITURE_WORDS)
+def is_furniture(wordToCheck):
+    # Determine if contains furniture-related words
+    return any(word_is_in_string(word, wordToCheck) for word in FURNITURE_WORDS)
 
 def word_is_in_string(word, string_to_check):
     # Check if a word is present in the given string

@@ -14,6 +14,10 @@ load_dotenv()
 
 FACEBOOK_MARKETPLACE_LOCATION_ID = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
 
+WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Entertainment', 'Sporting Goods']
+UNWANTED_CATEGORIES = ['Vehicles', 'Property Rentals', 'Home Sales']
+HOME_CATEGORIES = ['Home Goods', 'Home Improvement Supplies', 'Garden & Outdoor', 'Pet Supplies', 'Office Supplies', 'Family', 'Toys & Games']
+
 async def open_chrome_to_marketplace_free_items_page():
     # Open Chrome browser to the Facebook Marketplace free items page
     options = webdriver.ChromeOptions()
@@ -121,17 +125,22 @@ async def scrape_wanted_listings(previous_listings):
     listings = extract_listings_informations(browser)
 
     for listing in listings:
-        if is_unwanted_string(listing.title):
-            listing.is_unwanted = True
         if any(previous_url in listing.url for previous_url in previous_listings):
             listing.is_previous = True
+        elif is_unwanted_string(listing.title):
+            listing.is_unwanted = True
+        
 
     listings = await extract_listings_description_and_category(listings, browser)
 
     for listing in listings:
-        if is_unwanted_string(listing.description):
+        if is_unwanted_string(listing.description) or any(listing.general_category == word for word in UNWANTED_CATEGORIES) or listing.specific_category == "Cars & Trucks":
             listing.is_unwanted = True
-        if is_furniture(listing.title, listing.description):
+        elif is_furniture(listing.title) or is_furniture(listing.description) or is_furniture(listing.general_category) or is_furniture(listing.specific_category):
             listing.is_furniture = True
+        elif any(listing.general_category == word for word in WANTED_CATEGORIES) or "Outdoor" in listing.specific_category:
+            listing.is_wanted = True
+        elif any(listing.general_category == word for word in HOME_CATEGORIES):
+            listing.is_home = True
 
     return listings
