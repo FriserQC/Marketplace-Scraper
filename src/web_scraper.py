@@ -7,19 +7,16 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from data_filtering import is_unwanted_string, is_furniture
+from data_filtering import is_unwanted_string, determine_categories
 from listing import Listing
 
 load_dotenv()
 
 FACEBOOK_MARKETPLACE_LOCATION_ID = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
 
-WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Sporting Goods']
-UNWANTED_CATEGORIES = ['Vehicles', 'Property Rentals', 'Home Sales']
-HOME_CATEGORIES = ['Home Goods', 'Home Improvement Supplies', 'Garden & Outdoor', 'Pet Supplies', 'Office Supplies', 'Family', 'Toys & Games']
-
 async def open_chrome_to_marketplace_free_items_page():
     # Open Chrome browser to the Facebook Marketplace free items page
+
     options = webdriver.ChromeOptions()
     options.add_argument("start-maximized")
     options.page_load_strategy = 'eager'
@@ -38,6 +35,7 @@ async def open_chrome_to_marketplace_free_items_page():
 
 async def close_log_in_popup(browser):
     # Close the login popup if it appears
+
     await asyncio.sleep(2)
     try:
         close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
@@ -62,6 +60,7 @@ async def scroll_bottom_page(browser):
 
 def extract_listings_informations(browser):
     # Extract listing's informations from the page
+
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     links = soup.find_all('a', attrs={'href':re.compile(r'\/marketplace\/item\/')})
@@ -83,6 +82,7 @@ def extract_listings_informations(browser):
 
 async def extract_listings_description_and_category(listings, browser):
     # Extract descriptions and categories from the listings pages
+
     for listing in listings:
         if listing.is_previous:
             continue
@@ -131,6 +131,7 @@ async def extract_listings_description_and_category(listings, browser):
 
 async def scrape_wanted_listings(previous_listings):
     # Scrape listings that are wanted from marketplace
+
     browser = await open_chrome_to_marketplace_free_items_page()
     browser = await close_log_in_popup(browser)
     await scroll_bottom_page(browser)
@@ -146,14 +147,6 @@ async def scrape_wanted_listings(previous_listings):
 
     listings = await extract_listings_description_and_category(listings, browser)
 
-    for listing in listings:
-        if is_unwanted_string(listing.description) or any(listing.general_category == word for word in UNWANTED_CATEGORIES) or listing.specific_category == "Cars & Trucks" or listing.specific_category == "Commercial Trucks":
-            listing.is_unwanted = True
-        elif is_furniture(listing.title) or is_furniture(listing.description) or is_furniture(listing.general_category) or is_furniture(listing.specific_category):
-            listing.is_furniture = True
-        elif any(listing.general_category == word for word in WANTED_CATEGORIES) or "Outdoor" in listing.specific_category:
-            listing.is_wanted = True
-        elif any(listing.general_category == word for word in HOME_CATEGORIES):
-            listing.is_home = True
+    listings = determine_categories(listings)
 
     return listings
