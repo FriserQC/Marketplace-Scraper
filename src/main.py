@@ -11,7 +11,6 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 FREE_WANTED_CHANNEL_ID = int(os.getenv("FREE_WANTED_CHANNEL_ID"))
 FREE_MISC_CHANNEL_ID = int(os.getenv("FREE_MISC_CHANNEL_ID"))
-FREE_FURNITURE_CHANNEL_ID = int(os.getenv("FREE_FURNITURE_CHANNEL_ID"))
 FREE_HOME_CHANNEL_ID = int(os.getenv("FREE_HOME_CHANNEL_ID"))
 FREE_UNWANTED_CHANNEL_ID = int(os.getenv("FREE_UNWANTED_CHANNEL_ID"))
 MAX_NUMBER_OF_PREVIOUS_LISTINGS = 500
@@ -33,7 +32,6 @@ class MyClient(discord.Client):
 
         wanted_channel = self.get_channel(FREE_WANTED_CHANNEL_ID)
         misc_channel = self.get_channel(FREE_MISC_CHANNEL_ID)
-        furniture_channel = self.get_channel(FREE_FURNITURE_CHANNEL_ID)
         home_channel = self.get_channel(FREE_HOME_CHANNEL_ID)
         unwanted_channel = self.get_channel(FREE_UNWANTED_CHANNEL_ID)
 
@@ -44,7 +42,7 @@ class MyClient(discord.Client):
             try:
                 async with asyncio.timeout(900):
                     listings = await scrape_wanted_listings(self.previous_listings)
-                    await self.process_listings(listings, wanted_channel, misc_channel, furniture_channel, home_channel, unwanted_channel)
+                    await self.process_listings(listings, wanted_channel, misc_channel, home_channel, unwanted_channel)
                     print(f'Number of previous listings: {len(self.previous_listings)}')
 
                     # Clear previous data
@@ -59,7 +57,7 @@ class MyClient(discord.Client):
             except asyncio.TimeoutError:
                 print("Scraping task timed out. Retrying...")
 
-    async def process_listings(self, listings: List, wanted_channel, misc_channel, furniture_channel, home_channel, unwanted_channel):
+    async def process_listings(self, listings: List, wanted_channel, misc_channel, home_channel, unwanted_channel):
         for listing in listings:
             if not listing.is_previous:
                 message = (f'Location: {listing.location.strip()}\n'
@@ -71,8 +69,6 @@ class MyClient(discord.Client):
                     await unwanted_channel.send(message)
                 elif listing.is_wanted:
                     await wanted_channel.send(message)
-                elif listing.is_furniture:
-                    await furniture_channel.send(message)
                 elif listing.is_home:
                     await home_channel.send(message)
                 else:

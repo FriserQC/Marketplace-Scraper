@@ -11,5 +11,4 @@ class Listing:
         self.is_unwanted: bool = False
         self.is_wanted: bool = False
         self.is_home: bool = False
-        self.is_furniture: bool = False
         self.is_previous: bool = False

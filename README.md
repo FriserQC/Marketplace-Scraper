@@ -12,7 +12,6 @@ You need a discord bot that can send messages on channels.
         <li>DISCORD_TOKEN = <em>your own</em></li>
         <li>FREE_WANTED_CHANNEL_ID = <em>your own</em></li>
         <li>FREE_MISC_CHANNEL_ID = <em>your own</em></li>
-        <li>FREE_FURNITURE_CHANNEL_ID = <em>your own</em></li>
         <li>FREE_HOME_CHANNEL_ID = <em>your own</em></li>
         <li>FREE_UNWANTED_CHANNEL_ID = <em>your own</em></li>
         <li>FACEBOOK_MARKETPLACE_LOCATION_ID = <em>The facebook marketplace Id for your city</em> (See image below for exemple)</li>

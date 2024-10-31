@@ -97,19 +97,14 @@ def determine_categories(listings: List) -> List:
             listing.specific_category in ["Cars & Trucks", "Commercial Trucks"]
         ):
             listing.is_unwanted = True
+        elif listing.general_category in WANTED_CATEGORIES:
+            listing.is_wanted = True
         elif (
             any(word_is_in_string(word, listing.title) for word in FURNITURE_WORDS) or 
             any(word_is_in_string(word, listing.description) for word in FURNITURE_WORDS) or 
             any(word_is_in_string(word, listing.general_category) for word in FURNITURE_WORDS) or 
-            any(word_is_in_string(word, listing.specific_category) for word in FURNITURE_WORDS)
+            any(word_is_in_string(word, listing.specific_category) for word in FURNITURE_WORDS) or 
+            listing.general_category in HOME_CATEGORIES
         ):
-            listing.is_furniture = True
-        elif (
-            listing.general_category in WANTED_CATEGORIES or 
-            "Outdoor" in listing.specific_category
-        ):
-            listing.is_wanted = True
-        elif listing.general_category in HOME_CATEGORIES:
             listing.is_home = True
-
     return listings
