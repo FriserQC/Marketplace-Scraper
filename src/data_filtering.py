@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 UNWANTED_WORDS = [
     'offre', 'offer', 'offres', 'offers', 
@@ -78,37 +79,37 @@ WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Sporting Goods']
 UNWANTED_CATEGORIES = ['Vehicles', 'Property Rentals', 'Home Sales']
 HOME_CATEGORIES = ['Home Goods', 'Home Improvement Supplies', 'Garden & Outdoor', 'Pet Supplies', 'Office Supplies', 'Family', 'Toys & Games']
 
-def is_unwanted_string(string_to_check):
-    # Check if the given string contains unwanted words or a dollar sign
-    string_to_check = string_to_check.lower().replace('\n', ' ').strip()
-
-    # Check if contains $ in string
-    if re.search(r"\$", string_to_check):
-        return True
-
-    # Check for unwanted words
-    return any(word_is_in_string(word, string_to_check) for word in UNWANTED_WORDS)
-
-def is_furniture(wordToCheck):
-    # Determine if contains furniture-related words
-    return any(word_is_in_string(word, wordToCheck) for word in FURNITURE_WORDS)
-
-def word_is_in_string(word, string_to_check):
-    # Check if a word is present in the given string
-    pattern = re.compile(rf"\b(?:{word})\b", re.IGNORECASE)
+def word_is_in_string(word: str, string_to_check: str) -> bool:
+    pattern = re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE)
     return bool(pattern.search(string_to_check))
 
-def determine_categories(listings):
-    # Determine the categories of the listings
+def is_unwanted_string(string_to_check: str) -> bool:
+    string_to_check = string_to_check.lower().replace('\n', ' ').strip()
+    if re.search(r"\$", string_to_check):
+        return True
+    return any(word_is_in_string(word, string_to_check) for word in UNWANTED_WORDS)
 
+def determine_categories(listings: List) -> List:
     for listing in listings:
-        if is_unwanted_string(listing.description) or any(listing.general_category == word for word in UNWANTED_CATEGORIES) or listing.specific_category == "Cars & Trucks" or listing.specific_category == "Commercial Trucks":
+        if (
+            is_unwanted_string(listing.description) or 
+            listing.general_category in UNWANTED_CATEGORIES or 
+            listing.specific_category in ["Cars & Trucks", "Commercial Trucks"]
+        ):
             listing.is_unwanted = True
-        elif is_furniture(listing.title) or is_furniture(listing.description) or is_furniture(listing.general_category) or is_furniture(listing.specific_category):
+        elif (
+            any(word_is_in_string(word, listing.title) for word in FURNITURE_WORDS) or 
+            any(word_is_in_string(word, listing.description) for word in FURNITURE_WORDS) or 
+            any(word_is_in_string(word, listing.general_category) for word in FURNITURE_WORDS) or 
+            any(word_is_in_string(word, listing.specific_category) for word in FURNITURE_WORDS)
+        ):
             listing.is_furniture = True
-        elif any(listing.general_category == word for word in WANTED_CATEGORIES) or "Outdoor" in listing.specific_category:
+        elif (
+            listing.general_category in WANTED_CATEGORIES or 
+            "Outdoor" in listing.specific_category
+        ):
             listing.is_wanted = True
-        elif any(listing.general_category == word for word in HOME_CATEGORIES):
+        elif listing.general_category in HOME_CATEGORIES:
             listing.is_home = True
 
     return listings

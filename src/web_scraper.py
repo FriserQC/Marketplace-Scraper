@@ -9,14 +9,13 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from data_filtering import is_unwanted_string, determine_categories
 from listing import Listing
+from typing import List
 
 load_dotenv()
 
 FACEBOOK_MARKETPLACE_LOCATION_ID = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
 
-async def open_chrome_to_marketplace_free_items_page():
-    # Open Chrome browser to the Facebook Marketplace free items page
-
+async def open_chrome_to_marketplace_free_items_page() -> webdriver.Chrome:
     options = webdriver.ChromeOptions()
     options.add_argument("start-maximized")
     options.page_load_strategy = 'eager'
@@ -33,9 +32,7 @@ async def open_chrome_to_marketplace_free_items_page():
 
     return browser
 
-async def close_log_in_popup(browser):
-    # Close the login popup if it appears
-
+async def close_log_in_popup(browser: webdriver.Chrome) -> webdriver.Chrome:
     await asyncio.sleep(2)
     try:
         close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
@@ -49,8 +46,7 @@ async def close_log_in_popup(browser):
 
     return browser
 
-async def scroll_bottom_page(browser):
-    # Scroll to the bottom of the page
+async def scroll_bottom_page(browser: webdriver.Chrome):
     await asyncio.sleep(2)
     try:
         browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
@@ -58,12 +54,10 @@ async def scroll_bottom_page(browser):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def extract_listings_informations(browser):
-    # Extract listing's informations from the page
-
+def extract_listings_informations(browser: webdriver.Chrome) -> List[Listing]:
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
-    links = soup.find_all('a', attrs={'href':re.compile(r'\/marketplace\/item\/')})
+    links = soup.find_all('a', attrs={'href': re.compile(r'\/marketplace\/item\/')})
 
     listing_data = [
         {'text': '\n'.join(listing_link.stripped_strings), 'url': listing_link.get('href')}
@@ -80,9 +74,7 @@ def extract_listings_informations(browser):
 
     return extracted_data
 
-async def extract_listings_description_and_category(listings, browser):
-    # Extract descriptions and categories from the listings pages
-
+async def extract_listings_description_and_category(listings: List[Listing], browser: webdriver.Chrome) -> List[Listing]:
     for listing in listings:
         if listing.is_previous:
             continue
@@ -92,7 +84,7 @@ async def extract_listings_description_and_category(listings, browser):
         soup = BeautifulSoup(html, 'html.parser')
 
         try:
-            category = soup.find('a', attrs={'href':re.compile(r'\/marketplace\/[0-9]+\/[\w-]+\/')})
+            category = soup.find('a', attrs={'href': re.compile(r'\/marketplace\/[0-9]+\/[\w-]+\/')})
             listing.general_category = category.text
         except Exception as e:
             print(f"General category not found or not existing for this listing {listing.url} : {e}")
@@ -109,16 +101,15 @@ async def extract_listings_description_and_category(listings, browser):
 
         try:
             description_text = ""
-            description = soup.find('meta', attrs={'name':'description'})['content']
+            description = soup.find('meta', attrs={'name': 'description'})['content']
             description_text = str(description)
 
-            if (int(len(description_text)) > 10):
+            if len(description_text) > 10:
                 escaped_text = re.escape(description_text[:-3])
                 pattern = re.compile(escaped_text, re.MULTILINE | re.DOTALL)
                 complete_description = soup.find('span', string=pattern)
-                if (complete_description is not None):
-                    if int(len((complete_description.text)) > int(len(description_text))):
-                        description_text = str(complete_description.text)
+                if complete_description is not None and len(complete_description.text) > len(description_text):
+                    description_text = str(complete_description.text)
                 
             listing.description = description_text
 
@@ -129,9 +120,7 @@ async def extract_listings_description_and_category(listings, browser):
     browser.quit()
     return listings
 
-async def scrape_wanted_listings(previous_listings):
-    # Scrape listings that are wanted from marketplace
-
+async def scrape_wanted_listings(previous_listings: List[str]) -> List[Listing]:
     browser = await open_chrome_to_marketplace_free_items_page()
     browser = await close_log_in_popup(browser)
     await scroll_bottom_page(browser)
@@ -143,10 +132,8 @@ async def scrape_wanted_listings(previous_listings):
             listing.is_previous = True
         elif is_unwanted_string(listing.title):
             listing.is_unwanted = True
-        
 
     listings = await extract_listings_description_and_category(listings, browser)
-
     listings = determine_categories(listings)
 
     return listings

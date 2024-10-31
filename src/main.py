@@ -4,6 +4,7 @@ import asyncio
 from dotenv import load_dotenv
 import discord
 from web_scraper import scrape_wanted_listings
+from typing import List
 
 load_dotenv()
 
@@ -16,12 +17,12 @@ FREE_UNWANTED_CHANNEL_ID = int(os.getenv("FREE_UNWANTED_CHANNEL_ID"))
 MAX_NUMBER_OF_PREVIOUS_LISTINGS = 500
 
 class MyClient(discord.Client):
+
     def __init__(self, *args, **kwargs):
-        self.previous_listings = []
+        self.previous_listings: List[str] = []
         super().__init__(*args, **kwargs)
 
     async def setup_hook(self) -> None:
-        # Create the background task and run it in the background
         self.bg_task = self.loop.create_task(self.background_marketplace_scraping_task())
 
     async def on_ready(self):
@@ -43,29 +44,7 @@ class MyClient(discord.Client):
             try:
                 async with asyncio.timeout(900):
                     listings = await scrape_wanted_listings(self.previous_listings)
-                    for listing in listings:
-                        if not listing.is_previous:
-                            message = (f'Location: {listing.location.strip()}\n'
-                                       f'General Category: {listing.general_category}\n'
-                                       f'Specific Category: {listing.specific_category}\n'
-                                       f'URL: {listing.url}\n')
-
-                            if listing.is_unwanted:
-                                await unwanted_channel.send(message)
-
-                            elif listing.is_wanted: 
-                                await wanted_channel.send(message)
-
-                            elif listing.is_furniture:
-                                await furniture_channel.send(message)
-
-                            elif listing.is_home:
-                                await home_channel.send(message)
-
-                            else:
-                                await misc_channel.send(message)
-                            self.previous_listings.append(listing.url)
-
+                    await self.process_listings(listings, wanted_channel, misc_channel, furniture_channel, home_channel, unwanted_channel)
                     print(f'Number of previous listings: {len(self.previous_listings)}')
 
                     # Clear previous data
@@ -77,8 +56,29 @@ class MyClient(discord.Client):
 
                 await asyncio.sleep(300)  # Task runs every 5 minutes
 
-            except Exception as e:
-                print(f'The scraper operation took too long or had an error, going to retry: {e}')
+            except asyncio.TimeoutError:
+                print("Scraping task timed out. Retrying...")
+
+    async def process_listings(self, listings: List, wanted_channel, misc_channel, furniture_channel, home_channel, unwanted_channel):
+        for listing in listings:
+            if not listing.is_previous:
+                message = (f'Location: {listing.location.strip()}\n'
+                           f'General Category: {listing.general_category}\n'
+                           f'Specific Category: {listing.specific_category}\n'
+                           f'URL: {listing.url}\n')
+
+                if listing.is_unwanted:
+                    await unwanted_channel.send(message)
+                elif listing.is_wanted:
+                    await wanted_channel.send(message)
+                elif listing.is_furniture:
+                    await furniture_channel.send(message)
+                elif listing.is_home:
+                    await home_channel.send(message)
+                else:
+                    await misc_channel.send(message)
+                    
+                self.previous_listings.append(listing.url)
 
 client = MyClient(intents=discord.Intents.default())
 client.run(TOKEN, reconnect=True, log_level=40)
