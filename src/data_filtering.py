@@ -23,6 +23,7 @@ UNWANTED_WORDS = [
     'commande', 'commandes', 'order', 'orders',
     'lifetime warranty',
     'negotiable', 'negociable', 'négociable', 
+    'most demanding',
     'recherche', 'recherches', 'recherchons', 'recherchez', 'recherchent',
     'échange', 'echange', 'échanges', 'echanges', 'échanger', 
     'exchange', 'exchanges', 'trade', 'trades',
