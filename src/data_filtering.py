@@ -2,78 +2,125 @@ import re
 from typing import List
 
 UNWANTED_WORDS = [
-    'offre', 'offer', 'offres', 'offers', 
-    'vente', 'ventes', 'vendre', 'vends', 'vendons', 'vendez', 'vendent', 
-    'sale', 'sales', 'liquidation', 'liquidations', 'solde', 'soldes',
-    'rabais', 'deal', 'promotion', 'promotions', 'discount', 'discounts', 'savings',
-    'buy', 'buying', 'acheter', 'achete', 'achète', 'achetes', 'achètes', 
-    'sell', 'selling', 
-    'louer', 'rent', 'location', 'locations', 
-    'price', 'prices', 'prix',  'pricing',
-    'cash', 'paiement', 'paiements', 'payment', 'payments', 'pay', 
-    'taxes', 'taxe', 'tax', 
-    'rate', 'rates',
-    'not free', 'pas gratuit', 'pas gratuits', 
-    'remboursable', 'remboursables', 'remboursement', 'remboursements',
-    'financement', 'financing', 'finance', 
-    'credit', 'crédit', 
+    # Offers and Sales
+    'offre', 'offer', 'offres', 'offers', 'vente', 'ventes', 'vendre', 'vends', 'vendons', 'vendez', 'vendent',
+    'sale', 'sales', 'liquidation', 'liquidations', 'solde', 'soldes', 'clearance', 'clearances', 'clearout', 'clearouts', 'clearing', 'clearings',
+    'rabais', 'deal', 'promotion', 'promotions', 'promo', 'promos', 'discount', 'discounts', 'savings', 'save', 'saves', 'saving', 'économie', 'économies', 'économiser', 'économisez', 'économisant', 'économisants',
+
+    # Buying and Selling
+    'buy', 'buying', 'acheter', 'achete', 'achète', 'achetes', 'achètes', 'achetons', 'achetez', 'achètent', 'achetent', 'acheté', 'achetés', 'achetée', 'achetées',
+    'sell', 'selling', 'sells', 'vend',
+
+    # Renting
+    'louer', 'rent', 'location', 'locations', 'rental', 'rentals', 'renting', 'rentings',
+
+    # Pricing and Costs
+    'price', 'prices', 'prix', 'pricing', 'tarif', 'tarifs', 'cost', 'costs', 'coût', 'coûts',
+
+    # Payments
+    'cash', 'paiement', 'paiements', 'payment', 'payments', 'pay', 'pays', 'paying', 'payez', 'payable', 'payables',
+
+    # Taxes
+    'taxes', 'taxe', 'tax', 'taxation', 'taxations',
+
+    # Rates
+    'rate', 'rates', 'taux',
+
+    # Free and Refunds
+    'not free', 'pas gratuit', 'pas gratuits', 'not for free', 'not giveaway', 'not giveaways',
+    'remboursable', 'remboursables', 'remboursement', 'remboursements', 'refund', 'refunds',
+
+    # Financing and Credit
+    'financement', 'financing', 'finance', 'finances', 'financé', 'financés', 'financée', 'financées',
+    'credit', 'crédit', 'crédits', 'credits',
+
+    # Shipping and Delivery
     'free shipping', 'fast shipping', 'free delivery', 'fast delivery', 'delivery available', 'quality delivery',
-    'livraison gratuite', 'livraison rapide', 
-    'installation', 'service', 'services',
-    'commande', 'commandes', 'order', 'orders',
-    'lifetime warranty',
-    'negotiable', 'negociable', 'négociable', 
-    'most demanding',
+    'we deliver', 'we ship', 'livraison disponible', 'livraison de qualité',
+    'nous livrons', 'nous expédions', 'livraison gratuite', 'livraison rapide',
+
+    # Services and Installation
+    'installation', 'installations', 'service', 'services', 'technicien', 'techniciens', 'technicians', 'technician', 'installateur', 'installateurs', 'installers',
+
+    # Orders
+    'commande', 'commandes', 'order', 'orders', 'ordering', 'commander', 'commandez', 'commandant', 'commandants', 'commandé', 'commandés', 'commandée', 'commandées',
+
+    # Warranty
+    'lifetime warranty', 'garantie à vie', 'garantie de satisfaction', 'satisfaction guarantee', 'warranty', 'warranties', 'garantie', 'garanties', 'warrantied',
+
+    # Negotiation
+    'negotiable', 'negociable', 'négociable', 'négociables', 'negotiables', 'negotiate', 'negotiates', 'negotiating', 'negociate', 'negociates', 'negociating', 'négociation', 'négociations', 'negotiation', 'negotiations',
+
+    # Search
     'recherche', 'recherches', 'recherchons', 'recherchez', 'recherchent',
-    'échange', 'echange', 'échanges', 'echanges', 'échanger', 
-    'exchange', 'exchanges', 'trade', 'trades',
-    'soumission', 'quote', 'estimé', 'estimés'
+
+    # Exchange and Trade
+    'échange', 'echange', 'échanges', 'echanges', 'échanger', 'echanger', 'échangent', 'echangent',
+    'exchange', 'exchanges', 'trade', 'trades', 'trading', 'traded',
+
+    # Quotes and Estimates
+    'soumission', 'quote', 'estimé', 'estimés', 'estimée', 'estimées', 'estimation', 'estimations',
+    'soumettre', 'soumet', 'soumettez', 'soumettant', 'soumettent', 'soumissionner', 'soumissionnez', 'soumissionnant', 'soumissionnent',
+
+    # Miscellaneous
+    'most demanding'
 ]
 
 FURNITURE_WORDS = [
-    'meuble', 'meubles', 'furniture', 'furnitures', 
-    'bureau', 'bureaux', 'desk', 'desks', 
-    'tiroir', 'tiroirs', 'drawer', 'drawers', 
-    'dresser', 
-    'chaise', 'chaises', 'chair', 'chairs', 
-    'commode', 'commodes', 
-    'ottoman', 'ottomans', 
-    'sofa', 'sofas', 'divan', 'divans', 
-    'fauteuil', 'fauteuils', 'futon', 'futons', 
-    'causeuse', 'causeuses', 
-    'canapé', 'canapés', 'canape', 
-    'sectionnelle', 'sectionnelles', 'sectional', 
-    'couch', 'couchs', 
-    'lit', 'lits', 'bed', 'beds', 
-    'bibliothèque', 'bibliotheque', 'bibliothèques', 
-    'bibliotheque', 'bookcase', 'bookcases', 
-    'armoire', 'armoires', 'cabinet', 'cabinets', 
-    'classeur', 'classeurs', 
-    'buffet', 'buffets', 
-    'tablette', 'tablettes', 'étagères', 'étagère', 
-    'table', 'tables', 
-    'lampe', 'lampes', 'lamp', 'lamps', 
-    'luminaire', 'luminaires', 
-    'sommier', 'sommeiler', 'matelas', 
-    'box spring', 'box springs', 
-    'laveuse', 'washer', 'sècheuse', 'dryer', 
-    'cuisine', 'cuisines', 'kitchen', 'kitchens', 
-    'frigo', 'frigos', 'frigidaire', 'frigidaires', 
-    'fridge', 'fridges', 'refrigerator', 'refrigerators', 
-    'congélateur', 'congélateurs', 'congelateur', 'congelateurs', 
-    'cuisinière', 'cuisiniere', 'cuisinières', 'cuisinieres', 
-    'micro-onde', 'microonde', 'micro onde', 'micro-ondes', 
-    'microondes', 'micro ondes', 'microwave', 'microwaves', 
-    'foyer', 'foyers', 'fireplace', 'fireplaces', 
-    'rideau', 'rideaux', 'curtain', 'curtains', 
-    'coussin', 'coussins', 'cushion', 'cushions', 
-    'oreiller', 'oreillers', 'pillow', 'pillows', 
-    'coffre', 'coffres', 'miroir', 'miroirs', 
-    'mirror', 'mirrors', 
-    'cadre', 'cadres', 'frame', 'frames', 
-    'piano', 'pianos', 
-    'piscine', 'piscines', 'pool', 'pools', 
-    'spa', 'spas'
+    # General Furniture
+    'meuble', 'meubles', 'furniture', 'furnitures',
+
+    # Office Furniture
+    'bureau', 'bureaux', 'desk', 'desks',
+
+    # Storage Furniture
+    'tiroir', 'tiroirs', 'drawer', 'drawers',
+    'dresser', 'dressers',
+    'commode', 'commodes',
+    'armoire', 'armoires', 'cabinet', 'cabinets', 'wardrobe', 'wardrobes',
+    'classeur', 'classeurs', 'file cabinet', 'file cabinets',
+    'buffet', 'buffets', 'hutch', 'hutches',
+    'tablette', 'tablettes', 'étagères', 'étagère', 'shelf', 'shelves',
+    'bibliothèque', 'bibliotheque', 'bibliothèques', 'bibliotheques', 'bookshelf', 'bookshelves',
+    'bookcase', 'bookcases', 'book case', 'book cases',
+
+    # Seating Furniture
+    'chaise', 'chaises', 'chair', 'chairs', 'armchair', 'armchairs',
+    'ottoman', 'ottomans', 'pouf', 'poufs',
+    'sofa', 'sofas', 'divan', 'divans',
+    'fauteuil', 'fauteuils', 'futon', 'futons', 'recliner', 'recliners',
+    'causeuse', 'causeuses', 'loveseat', 'loveseats',
+    'canapé', 'canapés', 'canape',
+    'sectionnelle', 'sectionnelles', 'sectional', 'sectionals',
+    'couch', 'couches',
+
+    # Bedroom Furniture
+    'lit', 'lits', 'bed', 'beds', 'mattress', 'mattresses',
+    'sommier', 'sommeiler', 'matelas',
+    'oreiller', 'oreillers', 'pillow', 'pillows', 'pillowcase', 'pillowcases',
+
+    # Lighting
+    'lampe', 'lampes', 'lamp', 'lamps', 'lumière', 'lumieres', 'light', 'lights',
+    'luminaire', 'luminaires', 'lighting',
+
+    # Kitchen and Appliances
+    'cuisine', 'cuisines', 'kitchen', 'kitchens', 'kitchenette', 'kitchenettes',
+    'laveuse', 'washer', 'sècheuse', 'dryer', 'laveuse-sécheuse', 'washer-dryer',
+    'frigo', 'frigos', 'frigidaire', 'frigidaires', 'réfrigérateur', 'réfrigérateurs',
+    'fridge', 'fridges', 'refrigerator', 'refrigerators', 'refrigerateur', 'refrigerateurs',
+    'congélateur', 'congélateurs', 'congelateur', 'congelateurs', 'freezer', 'freezers',
+    'cuisinière', 'cuisiniere', 'cuisinières', 'cuisinieres', 'stove', 'stoves', 'range', 'ranges',
+    'micro-onde', 'microonde', 'micro onde', 'micro-ondes',
+    'microondes', 'micro ondes', 'microwave', 'microwaves', 'oven', 'ovens',
+
+    # Miscellaneous
+    'foyer', 'foyers', 'fireplace', 'fireplaces', 'cheminée', 'cheminées',
+    'rideau', 'rideaux', 'curtain', 'curtains', 'drapery', 'draperies',
+    'coussin', 'coussins', 'cushion', 'cushions',
+    'coffre', 'coffres', 'miroir', 'miroirs', 'mirror', 'mirrors',
+    'cadre', 'cadres', 'frame', 'frames',
+    'piscine', 'piscines', 'pool', 'pools',
+    'spa', 'spas', 'jacuzzi', 'jacuzzis'
 ]
 
 WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Sporting Goods']
