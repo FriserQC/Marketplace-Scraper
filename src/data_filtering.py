@@ -142,7 +142,7 @@ def determine_categories(listings: List) -> List:
         if (
             is_unwanted_string(listing.description) or 
             listing.general_category in UNWANTED_CATEGORIES or 
-            listing.specific_category in ["Cars & Trucks", "Commercial Trucks"]
+            listing.specific_category in ["Cars & Trucks", "Commercial Trucks", "Commercial Vehicles"]
         ):
             listing.is_unwanted = True
         elif listing.general_category in WANTED_CATEGORIES:
