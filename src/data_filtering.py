@@ -8,7 +8,7 @@ UNWANTED_WORDS = [
     'rabais', 'deal', 'promotion', 'promotions', 'promo', 'promos', 'discount', 'discounts', 'savings', 'save', 'saves', 'saving', 'économie', 'économies', 'économiser', 'économisez', 'économisant', 'économisants',
 
     # Buying and Selling
-    'buy', 'buying', 'acheter', 'achete', 'achète', 'achetes', 'achètes', 'achetons', 'achetez', 'achètent', 'achetent', 'acheté', 'achetés', 'achetée', 'achetées',
+    'buy', 'buying', 'achete', 'achète', 'achetes', 'achètes', 'achetons', 'achetez', 'achètent', 'achetent',
     'sell', 'selling', 'sells', 'vend',
 
     # Renting
@@ -43,10 +43,10 @@ UNWANTED_WORDS = [
     'installation', 'installations', 'service', 'services', 'technicien', 'techniciens', 'technicians', 'technician', 'installateur', 'installateurs', 'installers',
 
     # Orders
-    'commande', 'commandes', 'order', 'orders', 'ordering', 'commander', 'commandez', 'commandant', 'commandants', 'commandé', 'commandés', 'commandée', 'commandées',
+    'commande', 'commandes', 'order', 'orders', 'ordering', 'commandez',
 
     # Warranty
-    'lifetime warranty', 'garantie à vie', 'garantie de satisfaction', 'satisfaction guarantee', 'warranty', 'warranties', 'garantie', 'garanties', 'warrantied',
+    'lifetime warranty', 'garantie à vie', 'garantie de satisfaction', 'satisfaction guarantee', 'warrantied',
 
     # Negotiation
     'negotiable', 'negociable', 'négociable', 'négociables', 'negotiables', 'negotiate', 'negotiates', 'negotiating', 'negociate', 'negociates', 'negociating', 'négociation', 'négociations', 'negotiation', 'negotiations',
