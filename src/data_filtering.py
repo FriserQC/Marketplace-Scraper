@@ -35,7 +35,7 @@ UNWANTED_WORDS = [
     'credit', 'crédit', 'crédits', 'credits',
 
     # Shipping and Delivery
-    'free shipping', 'fast shipping', 'free delivery', 'fast delivery', 'delivery available', 'quality delivery',
+    'free shipping', 'fast shipping', 'free delivery', 'fast delivery', 'delivery available', 'quality delivery', 'home delivery', 'home shipping',
     'we deliver', 'we ship', 'livraison disponible', 'livraison de qualité',
     'nous livrons', 'nous expédions', 'livraison gratuite', 'livraison rapide',
 
@@ -43,7 +43,7 @@ UNWANTED_WORDS = [
     'installation', 'installations', 'service', 'services', 'technicien', 'techniciens', 'technicians', 'technician', 'installateur', 'installateurs', 'installers',
 
     # Orders
-    'commande', 'commandes', 'order', 'orders', 'ordering', 'commandez',
+    'commande', 'commandes', 'order', 'orders', 'ordering', 'commandez', 'inquiries', 'inquiry', 'enquiry', 'enquiries',
 
     # Warranty
     'lifetime warranty', 'garantie à vie', 'garantie de satisfaction', 'satisfaction guarantee', 'warrantied',
