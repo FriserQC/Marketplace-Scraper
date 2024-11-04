@@ -187,7 +187,7 @@ HOME_WORDS = [
     'entrée', 'entrées', 'entrance', 'entrances',
     'escalier', 'escaliers', 'stair', 'stairs',
     'chambre', 'chambres', 'room', 'rooms',
-    'salle', 'salles', 'salon', 'salons',
+    'salle', 'salles', 'salon', 'salons'
 ]
 
 WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Sporting Goods', 'Audio Equipment']
@@ -215,10 +215,10 @@ def determine_categories(listings: List) -> List:
         elif listing.general_category in WANTED_CATEGORIES:
             listing.is_wanted = True
         elif (
-            any(word_is_in_string(word, listing.title) for word in FURNITURE_WORDS) or 
-            any(word_is_in_string(word, listing.description) for word in FURNITURE_WORDS) or 
-            any(word_is_in_string(word, listing.general_category) for word in FURNITURE_WORDS) or 
-            any(word_is_in_string(word, listing.specific_category) for word in FURNITURE_WORDS) or 
+            any(word_is_in_string(word, listing.title) for word in HOME_WORDS) or 
+            any(word_is_in_string(word, listing.description) for word in HOME_WORDS) or 
+            any(word_is_in_string(word, listing.general_category) for word in HOME_WORDS) or 
+            any(word_is_in_string(word, listing.specific_category) for word in HOME_WORDS) or 
             listing.general_category in HOME_CATEGORIES
         ):
             listing.is_home = True
