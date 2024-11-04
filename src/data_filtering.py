@@ -65,6 +65,7 @@ UNWANTED_WORDS = [
     # Quotes and Estimates
     'soumission', 'quote', 'estimé', 'estimés', 'estimée', 'estimées', 'estimation', 'estimations',
     'soumettre', 'soumet', 'soumettez', 'soumettant', 'soumettent', 'soumissionner', 'soumissionnez', 'soumissionnant', 'soumissionnent',
+    'en stock', 'in stock', 'stock', 'stocks',
 
     # Miscellaneous
     'most demanding'
