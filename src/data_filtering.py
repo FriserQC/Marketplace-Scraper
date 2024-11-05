@@ -33,7 +33,7 @@ UNWANTED_WORDS = [
 
     # Financing and Credit
     'financement', 'financing', 'finance', 'finances', 'financé', 'financés', 'financée', 'financées', 
-    'credit', 'crédit', 'crédits', 'credits', 
+    'credit', 'crédit', 'crédits', 'credits', 'mortgage', 'hypothèque', 'hypothèques', 'loan', 'loans',
 
     # Shipping and Delivery
     'free shipping', 'fast shipping', 'free delivery', 'fast delivery', 'delivery available', 'quality delivery', 'home delivery', 'home shipping',
