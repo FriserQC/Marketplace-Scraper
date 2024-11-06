@@ -117,6 +117,12 @@ async def extract_listings_description_and_category(listings: List[Listing], bro
             print(f"Description not found or not existing for this listing {listing.url} : {e}")
             listing.description = description_text
 
+        # checks if the listing is a delivery (is not really free)
+        delivery = soup.find(lambda tag: tag.name == "div" and "dropoff" in tag.get_text().lower())
+
+        if not delivery is None:
+            listing.is_unwanted = True
+
     browser.quit()
     return listings
 
