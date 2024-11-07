@@ -54,8 +54,8 @@ class MyClient(discord.Client):
 
                 await asyncio.sleep(300)  # Task runs every 5 minutes
 
-            except asyncio.TimeoutError:
-                print("Scraping task timed out. Retrying...")
+            except Exception as e:
+                print(f"Scraping task timed out. Retrying... {e}")
 
     async def process_listings(self, listings: List, wanted_channel, misc_channel, home_channel, unwanted_channel):
         for listing in listings:
