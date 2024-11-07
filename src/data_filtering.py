@@ -74,11 +74,11 @@ UNWANTED_WORDS = [
 HOME_WORDS = [
     # General Furniture
     'meuble', 'meubles', 'furniture', 'furnitures',
-    'ameublement', 'ameublements', 'mobilier', 'mobilier', 'furnishing', 'furnishings',
-    'décoration', 'decorations', 'décor', 'décorations', 'decor', 'decors',
+    'ameublement', 'ameublements', 'mobilier', 'mobiliers', 'furnishing', 'furnishings',
+    'décoration', 'decorations', 'décor', 'decor', 'decors', 
 
     # Office Furniture
-    'bureau', 'bureaux', 'desk', 'desks', 'table', 'tables', 
+    'bureau', 'bureaux', 'desk', 'desks', 'table', 'tables', 'office', 'offices',
 
     # Storage Furniture
     'tiroir', 'tiroirs', 'drawer', 'drawers',
@@ -89,16 +89,24 @@ HOME_WORDS = [
     'tablette', 'tablettes', 'étagères', 'étagère', 'shelf', 'shelves',
     'bibliothèque', 'bibliotheque', 'bibliothèques', 'bibliotheques', 'bookshelf', 'bookshelves',
     'bookcase', 'bookcases', 'book case', 'book cases',
+    'coffre', 'coffres', 'chest', 'chests',
+    'caisson', 'caissons', 'cubby', 'cubbies',
+    'panier', 'paniers', 'basket', 'baskets',
+    'boîte', 'boîtes', 'box', 'boxes',
+    'rangement', 'rangements', 'storage', 'storages',
 
     # Seating Furniture
     'chaise', 'chaises', 'chair', 'chairs', 'armchair', 'armchairs',
-    'ottoman', 'ottomans', 'pouf', 'poufs',
+    'ottoman', 'ottomans',
     'sofa', 'sofas', 'divan', 'divans',
     'fauteuil', 'fauteuils', 'futon', 'futons', 'recliner', 'recliners',
     'causeuse', 'causeuses', 'loveseat', 'loveseats',
     'canapé', 'canapés', 'canape',
     'sectionnelle', 'sectionnelles', 'sectional', 'sectionals',
     'couch', 'couches', 
+    'tabouret', 'tabourets', 'stool', 'stools',
+    'pouf', 'poufs', 'pouffe', 'pouffes',
+    'banquette', 'banquettes', 'bench', 'benches',
 
     # Bedroom
     'lit', 'lits', 'bed', 'beds', 'mattress', 'mattresses',
@@ -110,13 +118,11 @@ HOME_WORDS = [
     'taie', 'taies', 'sham', 'shams',
     'literie', 'bedding',
     'table de nuit', 'table de nuits', 'nightstand', 'nightstands',
-    'armoire', 'armoires', 'wardrobe', 'wardrobes',
     'vanité', 'vanités', 'vanity', 'vanities',
     'coiffeuse', 'coiffeuses', 'dressing table', 'dressing tables',
     'penderie', 'penderies', 'closet', 'closets',
     'garde-robe', 'garde-robes', 'garde robe', 'garde robes', 'wardrobe', 'wardrobes',
     'coffre-fort', 'coffres-forts', 'safe', 'safes',
-
 
     # Lighting
     'lampe', 'lampes', 'lamp', 'lamps', 'lumière', 'lumieres', 'light', 'lights',
@@ -124,6 +130,12 @@ HOME_WORDS = [
     'plafonnier', 'plafonniers',
     'lustre', 'lustres', 'chandelier', 'chandeliers',
     'lampadaire', 'lampadaires',
+    'applique', 'appliques', 'sconce', 'sconces',
+    'abat-jour', 'abat-jours', 'lampshade', 'lampshades',
+    'ampoule', 'ampoules', 'bulb', 'bulbs',
+    'projecteur', 'projecteurs', 'projector', 'projectors',
+    'spotlight', 'spotlights',
+    'veilleuse', 'veilleuses', 'nightlight', 'nightlights',
 
     # Kitchen and Appliances
     'cuisine', 'cuisines', 'kitchen', 'kitchens', 'kitchenette', 'kitchenettes',
@@ -149,10 +161,12 @@ HOME_WORDS = [
     'friteuse', 'friteuses', 'fryer', 'fryers',
     'crockpot', 'crockpots', 'slow cooker', 'slow cookers',
     'cuisinart', 'cuisinarts',
+    'garde-manger', 'garde-mangers', 'pantry', 'pantries',
+    'vaisselier', 'vaisseliers', 'china cabinet', 'china cabinets',
 
     # Dining and Utensils
     'ustensile', 'ustensiles', 'utensil', 'utensils',
-    'vaisselle', 'dinnerware', 'tableware', 'dishware',
+    'vaisselle', 'vaisselles', 'dinnerware', 'tableware', 'dishware',
     'poêle', 'poêles', 'poêlon', 'poêlons', 'pan', 'pans',
     'casserole', 'casseroles', 'pot', 'pots',
     'plat', 'plats', 'dish', 'dishes',
@@ -164,7 +178,6 @@ HOME_WORDS = [
     'couteau', 'couteaux', 'knife', 'knives',
     'fourchette', 'fourchettes', 'fork', 'forks',
     'cuillère', 'cuillères', 'spoon', 'spoons',
-    'couteau', 'couteaux', 'knife',
 
     # Miscellaneous
     'foyer', 'foyers', 'fireplace', 'fireplaces', 'cheminée', 'cheminées',
@@ -175,7 +188,7 @@ HOME_WORDS = [
     'fenêtre', 'fenetres', 'window', 'windows',
     'tapis', 'carpet', 'carpets', 'rug', 'rugs',
     'tableau', 'tableaux', 'tableau', 'tableaux', 'table', 'tables',
-    'coffre', 'coffres', 'miroir', 'miroirs', 'mirror', 'mirrors',
+    'miroir', 'miroirs', 'mirror', 'mirrors',
     'vitre', 'vitres', 'glass', 'glasses', 'verre', 'verres',
     'cadre', 'cadres', 'frame', 'frames',
     'piscine', 'piscines', 'pool', 'pools',
@@ -188,7 +201,9 @@ HOME_WORDS = [
     'entrée', 'entrées', 'entrance', 'entrances',
     'escalier', 'escaliers', 'stair', 'stairs',
     'chambre', 'chambres', 'room', 'rooms',
-    'salle', 'salles', 'salon', 'salons'
+    'salle', 'salles', 'salon', 'salons',
+    'bathroom', 'bathrooms',
+    'cuisine', 'cuisines', 'kitchen', 'kitchens'
 ]
 
 WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Sporting Goods', 'Audio Equipment']
