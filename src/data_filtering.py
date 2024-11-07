@@ -68,7 +68,7 @@ UNWANTED_WORDS = [
     'en stock', 'in stock', 'stock', 'stocks',
 
     # Miscellaneous
-    'most demanding'
+    'most demanding', 'plus offrant'
 ]
 
 HOME_WORDS = [
