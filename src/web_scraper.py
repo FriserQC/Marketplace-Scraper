@@ -17,9 +17,12 @@ FACEBOOK_MARKETPLACE_LOCATION_ID = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
 
 async def open_chrome_to_marketplace_free_items_page() -> webdriver.Chrome:
     options = webdriver.ChromeOptions()
+    # options.add_argument('--no-sandbox')
+    options.add_argument('--headless')
+    options.add_argument('--disable-dev-shm-usage')
     options.add_argument("start-maximized")
     options.page_load_strategy = 'eager'
-    options.timeouts = {'pageLoad': 30000}
+    options.timeouts = {'pageLoad': 15000}
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
     browser = webdriver.Chrome(
