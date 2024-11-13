@@ -67,6 +67,11 @@ UNWANTED_WORDS = [
     'soumettre', 'soumet', 'soumettez', 'soumettant', 'soumettent', 'soumissionner', 'soumissionnez', 'soumissionnant', 'soumissionnent',
     'en stock', 'in stock', 'stock', 'stocks',
 
+    # Custom
+    'custom', 'personnalisé', 'personnalisée', 'personnalisés', 'personnalisées', 'personnaliser', 'personnalisez',
+    'customized', 'customisation', 'customisations', 'customizable', 'customisables', 'customization', 'customizations',
+    'sur mesure', 'sur mesures', 'tailored', 
+
     # Miscellaneous
     'most demanding', 'plus offrant'
 ]
