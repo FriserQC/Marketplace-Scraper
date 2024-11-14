@@ -2,9 +2,10 @@ import os
 import re
 import asyncio
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from data_filtering import is_unwanted_string, determine_categories
@@ -15,27 +16,23 @@ load_dotenv()
 
 FACEBOOK_MARKETPLACE_LOCATION_ID = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
 
-async def open_chrome_to_marketplace_free_items_page() -> webdriver.Chrome:
-    options = webdriver.ChromeOptions()
+async def open_chrome_to_marketplace_free_items_page() -> webdriver.Firefox:
+    options = webdriver.FirefoxOptions()
     # options.add_argument('--no-sandbox')
     options.add_argument('--headless')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument("start-maximized")
     options.page_load_strategy = 'eager'
     options.timeouts = {'pageLoad': 15000}
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-    browser = webdriver.Chrome(
-        options=options,
-        service=Service(ChromeDriverManager().install()),
-    )
+    browser = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=options)
 
     url = f"https://www.facebook.com/marketplace/{FACEBOOK_MARKETPLACE_LOCATION_ID}/free/?sortBy=creation_time_descend"
     browser.get(url)
 
     return browser
 
-async def close_log_in_popup(browser: webdriver.Chrome) -> webdriver.Chrome:
+async def close_log_in_popup(browser: webdriver.Firefox) -> webdriver.Firefox:
     await asyncio.sleep(2)
     try:
         close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
@@ -49,7 +46,7 @@ async def close_log_in_popup(browser: webdriver.Chrome) -> webdriver.Chrome:
 
     return browser
 
-async def scroll_bottom_page(browser: webdriver.Chrome):
+async def scroll_bottom_page(browser: webdriver.Firefox):
     await asyncio.sleep(2)
     try:
         browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
@@ -57,7 +54,7 @@ async def scroll_bottom_page(browser: webdriver.Chrome):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def extract_listings_informations(browser: webdriver.Chrome) -> List[Listing]:
+def extract_listings_informations(browser: webdriver.Firefox) -> List[Listing]:
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     links = soup.find_all('a', attrs={'href': re.compile(r'\/marketplace\/item\/')})
@@ -77,7 +74,7 @@ def extract_listings_informations(browser: webdriver.Chrome) -> List[Listing]:
 
     return extracted_data
 
-async def extract_listings_description_and_category(listings: List[Listing], browser: webdriver.Chrome) -> List[Listing]:
+async def extract_listings_description_and_category(listings: List[Listing], browser: webdriver.Firefox) -> List[Listing]:
     for listing in listings:
         if listing.is_previous:
             continue
