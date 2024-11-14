@@ -30,6 +30,7 @@ UNWANTED_WORDS = [
     # Free and Refunds
     'not free', 'pas gratuit', 'pas gratuits', 'not for free', 'not giveaway', 'not giveaways', 
     'remboursable', 'remboursables', 'remboursement', 'remboursements', 'refund', 'refunds', 'refundable', 'refundables',
+    'free trial', 'essai gratuit', 'essais gratuits', 'free trials', 
 
     # Financing and Credit
     'financement', 'financing', 'finance', 'finances', 'financé', 'financés', 'financée', 'financées', 
@@ -63,7 +64,7 @@ UNWANTED_WORDS = [
     'exchange', 'exchanges', 'trade', 'trades', 'trading', 'traded', 'trader', 'traders',
 
     # Quotes and Estimates
-    'soumission', 'quote', 'estimé', 'estimés', 'estimée', 'estimées', 'estimation', 'estimations',
+    'soumission', 'quote', 'estimé', 'estimés', 'estimée', 'estimées', 'estimation', 'estimations', 'free estimate', 'free estimates',
     'soumettre', 'soumet', 'soumettez', 'soumettant', 'soumettent', 'soumissionner', 'soumissionnez', 'soumissionnant', 'soumissionnent',
     'en stock', 'in stock', 'stock', 'stocks',
 
