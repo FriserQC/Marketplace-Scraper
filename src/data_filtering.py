@@ -49,6 +49,7 @@ UNWANTED_WORDS = [
 
     # Warranty
     'lifetime warranty', 'garantie à vie', 'garantie de satisfaction', 'satisfaction guarantee', 'warrantied',
+    'insurance', 'assurance', 'assurances',
 
     # Negotiation
     'negotiable', 'negociable', 'négociable', 'négociables', 'negotiables', 'negotiate', 'negotiates', 'negotiating', 'negociate', 'negociates', 'negociating', 'négociation', 
