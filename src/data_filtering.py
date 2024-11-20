@@ -214,7 +214,9 @@ HOME_WORDS = [
 ]
 
 WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Sporting Goods', 'Audio Equipment']
+WANTED_SPECIFIC_CATEGORIES = ['DVD & Blu-ray Players', 'Smart Watches', 'CPUs/Processors', 'Pro Audio Equipment', 'Video Games', 'Networking & Servers', 'Tablets & eBook Readers']
 UNWANTED_CATEGORIES = ['Vehicles', 'Property Rentals', 'Home Sales']
+UNWANTED_SPECIFIC_CATEGORIES = ['Cars & Trucks', 'Commercial Trucks', 'Commercial Vehicles']
 HOME_CATEGORIES = ['Home Goods', 'Home Improvement Supplies', 'Garden & Outdoor', 'Pet Supplies', 'Office Supplies', 'Family', 'Toys & Games']
 
 def word_is_in_string(word: str, string_to_check: str) -> bool:
@@ -232,10 +234,13 @@ def determine_categories(listings: List) -> List:
         if (
             is_unwanted_string(listing.description) or 
             listing.general_category in UNWANTED_CATEGORIES or 
-            listing.specific_category in ["Cars & Trucks", "Commercial Trucks", "Commercial Vehicles"]
+            listing.specific_category in UNWANTED_SPECIFIC_CATEGORIES
         ):
             listing.is_unwanted = True
-        elif listing.general_category in WANTED_CATEGORIES:
+        elif (
+            listing.general_category in WANTED_CATEGORIES or 
+            listing.specific_category in WANTED_SPECIFIC_CATEGORIES
+        ):
             listing.is_wanted = True
         elif (
             any(word_is_in_string(word, listing.title) for word in HOME_WORDS) or 
