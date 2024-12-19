@@ -1,6 +1,7 @@
 import os
 import datetime
 import asyncio
+import async_timeout
 from dotenv import load_dotenv
 import discord
 from web_scraper import scrape_wanted_listings
@@ -40,7 +41,7 @@ class MyClient(discord.Client):
 
             # Run task; if it takes more than 15 minutes, cancel and retry
             try:
-                async with asyncio.timeout(900):
+                async with async_timeout.timeout(900):
                     listings = await scrape_wanted_listings(self.previous_listings)
                     await self.process_listings(listings, wanted_channel, misc_channel, home_channel, unwanted_channel)
                     print(f'Number of previous listings: {len(self.previous_listings)}')
