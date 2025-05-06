@@ -52,10 +52,22 @@ async def close_log_in_popup(browser: webdriver.Chrome) -> webdriver.Chrome:
 async def scroll_bottom_page(browser: webdriver.Chrome):
     await asyncio.sleep(2)
     try:
-        browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-        await asyncio.sleep(2)
+        last_height = browser.execute_script("return document.body.scrollHeight")
+        
+        while True:
+        
+            browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            await asyncio.sleep(2)
+
+            new_height = browser.execute_script("return document.body.scrollHeight")
+
+            if new_height == last_height:
+                break
+            
+            last_height = new_height
+        
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"A Scrolling Error occurred: {e}")
 
 def extract_listings_informations(browser: webdriver.Chrome) -> List[Listing]:
     html = browser.page_source
