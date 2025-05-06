@@ -37,21 +37,13 @@ class MyClient(discord.Client):
         unwanted_channel = self.get_channel(FREE_UNWANTED_CHANNEL_ID)
 
         while not self.is_closed():
-            print("Start: " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
+            print("Start: " + datetime.datetime.now().strftime("%H:%M %B %d, %Y") + "\n")
 
-            # Run task; if it takes more than 15 minutes, cancel and retry
+            # Run task; if it takes more than 30 minutes, cancel and retry
             try:
-                async with async_timeout.timeout(900):
+                async with async_timeout.timeout(1800):
                     listings = await scrape_wanted_listings(self.previous_listings)
-                    await self.process_listings(listings, wanted_channel, misc_channel, home_channel, unwanted_channel)
-                    print(f'Number of previous listings: {len(self.previous_listings)}')
-
-                    # Clear previous data
-                    while len(self.previous_listings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS:
-                        self.previous_listings.pop(0)
-
-                    print("End: " + datetime.datetime.now().strftime("%H:%M %B %d, %Y"))
-                    print('------')
+                    await self.process_listings(listings, wanted_channel, misc_channel, home_channel, unwanted_channel)             
 
                 await asyncio.sleep(300)  # Task runs every 5 minutes
 
@@ -78,6 +70,13 @@ class MyClient(discord.Client):
                     await misc_channel.send(message)
                     
                 self.previous_listings.append(listing.url)
+
+        # Clear previous data
+        print(f'Number of previous listings: {len(self.previous_listings)}')
+        while len(self.previous_listings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS:
+            self.previous_listings.pop(0)
+
+        print("End: " + datetime.datetime.now().strftime("%H:%M %B %d, %Y") + "\n")
 
 client = MyClient(intents=discord.Intents.default())
 client.run(TOKEN, reconnect=True, log_level=40)
