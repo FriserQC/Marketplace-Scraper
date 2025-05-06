@@ -64,6 +64,7 @@ class MyClient(discord.Client):
                 message = (f'Location: {listing.location.strip()}\n'
                            f'General Category: {listing.general_category}\n'
                            f'Specific Category: {listing.specific_category}\n'
+                           f'Title: {listing.title}\n'
                            f'URL: {listing.url}\n')
 
                 if listing.is_unwanted:

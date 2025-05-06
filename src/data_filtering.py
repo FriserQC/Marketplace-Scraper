@@ -214,7 +214,7 @@ HOME_WORDS = [
 ]
 
 WANTED_CATEGORIES = ['Electronics', 'Musical Instruments', 'Sporting Goods', 'Audio Equipment']
-WANTED_SPECIFIC_CATEGORIES = ['DVD & Blu-ray Players', 'Smart Watches', 'CPUs/Processors', 'Pro Audio Equipment', 'Video Games', 'Networking & Servers', 'Tablets & eBook Readers']
+WANTED_SPECIFIC_CATEGORIES = ['DVD & Blu-ray Players', 'Desktop Computers', 'Smart Watches', 'CPUs/Processors', 'Pro Audio Equipment', 'Video Games', 'Networking & Servers', 'Tablets & eBook Readers', 'Drums', 'Camping & Hiking']
 UNWANTED_CATEGORIES = ['Vehicles', 'Property Rentals', 'Home Sales', 'Rentals']
 UNWANTED_SPECIFIC_CATEGORIES = ['Cars & Trucks', 'Commercial Trucks', 'Commercial Vehicles']
 HOME_CATEGORIES = ['Home Goods', 'Home Improvement Supplies', 'Garden & Outdoor', 'Pet Supplies', 'Office Supplies', 'Family', 'Toys & Games']
