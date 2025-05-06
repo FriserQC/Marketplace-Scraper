@@ -65,6 +65,7 @@ class MyClient(discord.Client):
                            f'General Category: {listing.general_category}\n'
                            f'Specific Category: {listing.specific_category}\n'
                            f'Title: {listing.title}\n'
+                           f'Image: {listing.img_url}\n'
                            f'URL: {listing.url}\n')
 
                 if listing.is_unwanted:

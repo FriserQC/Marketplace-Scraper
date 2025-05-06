@@ -75,7 +75,7 @@ def extract_listings_informations(browser: webdriver.Chrome) -> List[Listing]:
     links = soup.find_all('a', attrs={'href': re.compile(r'\/marketplace\/item\/')})
 
     listing_data = [
-        {'text': '\n'.join(listing_link.stripped_strings), 'url': listing_link.get('href')}
+        {'text': '\n'.join(listing_link.stripped_strings), 'url': listing_link.get('href'), 'img_url': listing_link.find('img')['src'] if listing_link.find('img').has_attr('src') else None}
         for listing_link in links
     ]
 
@@ -85,7 +85,8 @@ def extract_listings_informations(browser: webdriver.Chrome) -> List[Listing]:
         title = ' '.join(line for line in lines if line not in ["Free", "Pending", '·'] and "CA$" not in line)
         location = lines[-1]
         url = "https://www.facebook.com" + re.sub(r'\?.*', '', item['url'])
-        extracted_data.append(Listing(title, location, url))
+        img_url = item['img_url'] if item['img_url'] else ""
+        extracted_data.append(Listing(title, location, url, img_url))
 
     return extracted_data
 
