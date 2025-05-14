@@ -1,5 +1,5 @@
 import os
-import datetime
+from datetime import datetime
 import asyncio
 import async_timeout
 from dotenv import load_dotenv
@@ -37,7 +37,7 @@ class MyClient(discord.Client):
         unwanted_channel = self.get_channel(FREE_UNWANTED_CHANNEL_ID)
 
         while not self.is_closed():
-            print("Start: " + datetime.datetime.now().strftime("%H:%M %B %d, %Y") + "\n")
+            print("Start: " + datetime.now().strftime("%H:%M %B %d, %Y") + "\n")
 
             # Run task; if it takes more than 30 minutes, cancel and retry
             try:
@@ -76,7 +76,22 @@ class MyClient(discord.Client):
         while len(self.previous_listings) > MAX_NUMBER_OF_PREVIOUS_LISTINGS:
             self.previous_listings.pop(0)
 
-        print("End: " + datetime.datetime.now().strftime("%H:%M %B %d, %Y") + "\n")
+        print("End: " + datetime.now().strftime("%H:%M %B %d, %Y") + "\n")
 
 client = MyClient(intents=discord.Intents.default())
-client.run(TOKEN, reconnect=True, log_level=40)
+
+try:
+    client.run(TOKEN, reconnect=True, log_level=40)
+except discord.HTTPException as e:
+    # Check for rate limit (HTTP 429)
+    if e.status == 429:
+        retry_after = e.response.headers.get("Retry-After")
+        message = f"Rate limit hit! Retry after: {retry_after} seconds."
+        print(message)
+    else:
+        print(f"HTTPException occurred: {e}")
+except Exception as e:
+    print(f"An unexpected error occurred while running the bot: {e}")
+finally:
+    os.system("python restarter.py")
+    os.system('kill 1')
