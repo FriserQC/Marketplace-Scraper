@@ -103,7 +103,8 @@ async def extract_listings_description_and_category(listings: List[Listing], bro
             category = soup.find('a', attrs={'href': re.compile(r'\/marketplace\/[0-9]+\/[\w-]+\/')})
             listing.general_category = category.text
         except Exception as e:
-            print(f"General category not found or not existing for this listing {listing.url} : {e}")
+            pass
+            # print(f"General category not found or not existing for this listing {listing.url} : {e}")
 
         try:
             title = soup.find('title').text
@@ -126,11 +127,10 @@ async def extract_listings_description_and_category(listings: List[Listing], bro
                 complete_description = soup.find('span', string=pattern)
                 if complete_description is not None and len(complete_description.text) > len(description_text):
                     description_text = str(complete_description.text)
-                
-            listing.description = description_text
 
         except Exception as e:
             print(f"Description not found or not existing for this listing {listing.url} : {e}")
+        finally:
             listing.description = description_text
 
         # checks if the listing is a delivery (is not really free)

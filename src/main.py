@@ -25,9 +25,6 @@ class MyClient(discord.Client):
     async def setup_hook(self) -> None:
         self.bg_task = self.loop.create_task(self.background_marketplace_scraping_task())
 
-    async def on_ready(self):
-        print(f'Logged in as {self.user} (ID: {self.user.id})')
-
     async def background_marketplace_scraping_task(self):
         await self.wait_until_ready()
 
@@ -37,7 +34,7 @@ class MyClient(discord.Client):
         unwanted_channel = self.get_channel(FREE_UNWANTED_CHANNEL_ID)
 
         while not self.is_closed():
-            print("Start: " + datetime.now().strftime("%H:%M %B %d, %Y") + "\n")
+            print("Start: " + datetime.now().strftime("%H:%M %B %d, %Y"))
 
             # Run task; if it takes more than 30 minutes, cancel and retry
             try:
