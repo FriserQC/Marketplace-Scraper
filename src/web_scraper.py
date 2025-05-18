@@ -69,6 +69,28 @@ async def scroll_bottom_page(browser: webdriver.Chrome):
     except Exception as e:
         print(f"A Scrolling Error occurred: {e}")
 
+async def click_see_more_description(browser: webdriver.Chrome):
+    try:
+        # close login
+        close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
+        close_button.click()
+    except Exception as e:
+        print(f"Could not find or click the close button. Error: {e}")
+    
+    try:
+        see_more_div = browser.find_element(By.XPATH, "//div[@role='button' and contains(., 'See more')]")
+        see_more_button = see_more_div.find_element(By.XPATH, ".//span")
+        see_more_button.click()
+        await asyncio.sleep(1)
+    except Exception as e:
+        print(f"Could not find or click the 'See more' button, retrying. Error: {e}")
+
+def get_full_description(soup: BeautifulSoup, description_text: str) -> str:
+    spans = soup.find_all('span')
+    for span in spans:
+        if span.get_text() and description_text[:10] in span.get_text():
+            return span
+
 def extract_listings_informations(browser: webdriver.Chrome) -> List[Listing]:
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
@@ -89,6 +111,11 @@ def extract_listings_informations(browser: webdriver.Chrome) -> List[Listing]:
         extracted_data.append(Listing(title, location, url, img_url))
 
     return extracted_data
+
+def refresh_html_soup(browser: webdriver.Chrome) -> BeautifulSoup:
+    html = browser.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    return soup
 
 async def extract_listings_description_and_category(listings: List[Listing], browser: webdriver.Chrome) -> List[Listing]:
     for listing in listings:
@@ -119,14 +146,22 @@ async def extract_listings_description_and_category(listings: List[Listing], bro
         try:
             description_text = ""
             description = soup.find('meta', attrs={'name': 'description'})['content']
-            description_text = str(description)
+            description_text = str(description).strip()
 
-            if len(description_text) > 10:
-                escaped_text = re.escape(description_text[:-3])
-                pattern = re.compile(escaped_text, re.MULTILINE | re.DOTALL)
-                complete_description = soup.find('span', string=pattern)
-                if complete_description is not None and len(complete_description.text) > len(description_text):
-                    description_text = str(complete_description.text)
+            if len(description_text) > 10 or description_text[-3:] != "...":
+                complete_description = get_full_description(soup, description_text)
+
+                if complete_description is not None :
+                    # check if expand button is present
+                    expand_button = complete_description.find('div', attrs={'role': 'button'})
+
+                    if expand_button is not None:
+                        await click_see_more_description(browser)
+                        soup = refresh_html_soup(browser)
+                        complete_description = get_full_description(soup, description_text)
+
+                    if len(complete_description.text) > len(description_text):
+                        description_text = str(complete_description.text)
 
         except Exception as e:
             print(f"Description not found or not existing for this listing {listing.url} : {e}")
