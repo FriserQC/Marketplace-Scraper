@@ -4,6 +4,9 @@ import asyncio
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import ElementClickInterceptedException
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
@@ -28,6 +31,7 @@ def open_headless_browser() -> webdriver.Chrome:
     options.add_argument('--headless')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument("start-maximized")
+    options.add_argument("--window-size=2560,1440")
     options.timeouts = {'pageLoad': 15000}
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
@@ -91,12 +95,18 @@ async def click_see_more_description(browser: webdriver.Chrome, first_time=True)
     try:
         see_more_div = browser.find_element(By.XPATH, "//div[@role='button' and contains(., 'See more')]")
         see_more_button = see_more_div.find_element(By.XPATH, ".//span")
+        WebDriverWait(browser, 10).until(expected_conditions.element_to_be_clickable(see_more_button))
         see_more_button.click()
-        await asyncio.sleep(1)
+    except ElementClickInterceptedException as e:
+        if first_time:
+            print(f"Click intercepted by another element, retrying. Error: {e}")
+            await click_see_more_description(browser, False)
+        else:
+            print(f"Click intercepted by another element after retrying. Error: {e}")
     except Exception as e:
         if first_time:
             print(f"Could not find or click the 'See more' button, retrying. Error: {e}")
-            click_see_more_description(browser, False)
+            await click_see_more_description(browser, False)
         else:
             print(f"Could not find or click the 'See more' button after retrying. Error: {e}")
 
@@ -165,6 +175,7 @@ async def fill_listings_description(listing: Listing, soup: BeautifulSoup, brows
 
                 if expand_button is not None:
                     await click_see_more_description(browser)
+                    print(f"Clicking on 'See more' for listing {listing.url}")
                     soup = refresh_html_soup(browser)
                     complete_description = get_listings_full_description(soup, description_text)
 
