@@ -4,7 +4,7 @@ import asyncio
 import async_timeout
 from dotenv import load_dotenv
 import discord
-from web_scraper import scrape_wanted_listings
+from web_scraper import scrape_marketplace_listings
 from typing import List
 
 load_dotenv()
@@ -39,7 +39,7 @@ class MyClient(discord.Client):
             # Run task; if it takes more than 30 minutes, cancel and retry
             try:
                 async with async_timeout.timeout(1800):
-                    listings = await scrape_wanted_listings(self.previous_listings)
+                    listings = await scrape_marketplace_listings(self.previous_listings)
                     await self.process_listings(listings, wanted_channel, misc_channel, home_channel, unwanted_channel)             
 
                 await asyncio.sleep(300)  # Task runs every 5 minutes
