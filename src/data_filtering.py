@@ -225,8 +225,21 @@ def word_is_in_string(word: str, string_to_check: str) -> bool:
 
 def is_unwanted_string(string_to_check: str) -> bool:
     string_to_check = string_to_check.lower().replace('\n', ' ').strip()
-    if re.search(r"\$", string_to_check):
-        return True
+
+    matches = re.finditer(r"(?:\d+(?:\.\d+)?\s*\$|\$\s*\d+(?:\.\d+)?|\$)", string_to_check)
+
+    for match in matches:
+        text = match.group()
+
+        if text.strip() == "$":
+            return True
+
+        number_match = re.search(r"\d+(?:\.\d+)?", text)
+        if number_match:
+            value = float(number_match.group())
+            if value != 0:
+                return True
+        
     return any(word_is_in_string(word, string_to_check) for word in UNWANTED_WORDS)
 
 def determine_categories(listings: List) -> List:
