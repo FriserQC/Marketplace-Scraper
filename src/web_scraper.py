@@ -32,7 +32,7 @@ def open_headless_browser() -> webdriver.Chrome:
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument("start-maximized")
     options.add_argument("--window-size=2560,1440")
-    options.timeouts = {'pageLoad': 15000}
+    options.timeouts = {'pageLoad': 30000}
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
     browser = webdriver.Chrome(

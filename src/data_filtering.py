@@ -227,7 +227,6 @@ def is_unwanted_string(string_to_check: str) -> bool:
     string_to_check = string_to_check.lower().replace('\n', ' ').strip()
 
     matches = re.finditer(r"(?:\d+(?:\.\d+)?\s*\$|\$\s*\d+(?:\.\d+)?|\$)", string_to_check)
-
     for match in matches:
         text = match.group()
 
