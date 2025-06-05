@@ -16,7 +16,7 @@ UNWANTED_WORDS = [
     'louer', 'rent', 'location', 'locations', 'rental', 'rentals', 'renting', 'rentings', 'loue', 'loues', 'louons', 'louez', 'louent',
 
     # Pricing and Costs
-    'price', 'prices', 'prix', 'pricing', 'tarif', 'tarifs', 'cost', 'costs', 'coût', 'coûts', 
+    'price', 'prices', 'prix', 'pricing', 'tarif', 'tarifs', 'cost', 'costs', 'coût', 'coûts', 'dollar', 'dollars','cents', 'cent',
 
     # Payments
     'cash', 'paiement', 'paiements', 'payment', 'payments', 'pay', 'pays', 'paying', 'payez', 'payable', 'payables', 

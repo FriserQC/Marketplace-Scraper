@@ -112,8 +112,9 @@ async def click_see_more_description(browser: webdriver.Chrome, first_time=True)
 
 def get_listings_full_description(soup: BeautifulSoup, description_text: str) -> str:
     spans = soup.find_all('span')
+    description = description_text[:-3]
     for span in spans:
-        if span.get_text() and description_text[:10] in span.get_text():
+        if span.get_text() and description in span.get_text():
             return span
     return None
 
@@ -166,7 +167,7 @@ async def fill_listings_description(listing: Listing, soup: BeautifulSoup, brows
         description = soup.find('meta', attrs={'name': 'description'})['content']
         description_text = str(description).strip()
 
-        if len(description_text) > 10 or description_text[-3:] != "...":
+        if len(description_text) > 10 or description_text[-3:] == "...":
             complete_description = get_listings_full_description(soup, description_text)
 
             if complete_description is not None :
