@@ -56,7 +56,7 @@ UNWANTED_WORDS = [
     'négociations', 'negotiation', 'negotiations', 
 
     # Search
-    'recherche', 'recherches', 'recherchons', 'recherchez', 'recherchent', 'search', 'searches', 'searching', 'searched',
+    'recherche', 'recherches', 'recherchons', 'recherchez', 'recherchent', 'search', 'searches', 'searching', 'searched', 'chercher', 'cherches', 'cherchons', 'cherchez', 'cherchent',
     'looking for', 'looking to buy', 'looking to sell', 'looking to trade', 'looking to exchange', 'looking for a', 'looking for an', 'looking for some', 'looking for any',
     'looking for someone', 'looking for something', 'looking for somewhere', 'looking for a place', 'looking for a person', 'looking for a company', 'looking for a business',
 
