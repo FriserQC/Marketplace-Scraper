@@ -192,6 +192,7 @@ async def fill_listings_description(listing: Listing, soup: BeautifulSoup, brows
 
 async def fill_listings_informations(listings: List[Listing], browser: webdriver.Chrome) -> List[Listing]:
     for listing in listings:
+        print(f"\rProcessing listing number: {listings.index(listing) + 1} / {len(listings)} ", end="")
         if listing.is_previous:
             continue
 
@@ -207,6 +208,8 @@ async def fill_listings_informations(listings: List[Listing], browser: webdriver
 
         if not delivery is None:
             listing.is_unwanted = True
+
+    print("\nAll listings processed.")
 
     return listings
 
@@ -225,6 +228,8 @@ async def scrape_marketplace_listings(previous_listings: List[str]) -> List[List
 
     listings = extract_listings_informations_from_home_page(browser)
     listings = filter_previous_listings(previous_listings, listings)
+
+    print(f"Number of new listings found: {len([x for x in listings if not x.is_previous])}")
 
     listings = await fill_listings_informations(listings, browser)
     browser.quit()

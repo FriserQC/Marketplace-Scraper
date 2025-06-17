@@ -36,18 +36,17 @@ class MyClient(discord.Client):
         while not self.is_closed():
             print("Start: " + datetime.now().strftime("%H:%M %B %d, %Y"))
 
-            # Run task; if it takes more than 30 minutes, cancel and retry
             try:
-                async with async_timeout.timeout(1800):
-                    listings = await scrape_marketplace_listings(self.previous_listings)
-                    await self.process_listings(listings, wanted_channel, misc_channel, home_channel, unwanted_channel)             
+                listings = await scrape_marketplace_listings(self.previous_listings)
+                await self.process_listings(listings, wanted_channel, misc_channel, home_channel, unwanted_channel)             
 
-                await asyncio.sleep(300)  # Task runs every 5 minutes
+                await asyncio.sleep(5 * 60)  # Task runs every 5 minutes
 
             except Exception as e:
                 print(f"Scraping task timed out. Retrying... {e}")
 
     async def process_listings(self, listings: List, wanted_channel, misc_channel, home_channel, unwanted_channel):
+        print(f'Sending listings in discord')
         for listing in listings:
             if not listing.is_previous:
                 message = (f'Location: {listing.location.strip()}\n'

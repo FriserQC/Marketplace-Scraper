@@ -3,7 +3,7 @@ from typing import List
 
 UNWANTED_WORDS = [
     # Offers and Sales
-    'offre', 'offer', 'offres', 'offers', 'vente', 'ventes', 'vendre', 'vends', 'vendons', 'vendez', 'vendent',
+    'offre', 'offer', 'offres', 'offers', 'vente', 'ventes', 'vendre', 'vends', 'vendons', 'vendez', 'vendent', 'vendu', 'vendus',
     'sale', 'sales', 'liquidation', 'liquidations', 'solde', 'soldes', 'clearance', 'clearances', 'clearout', 'clearouts', 'clearing', 'clearings',
     'rabais', 'deal', 'promotion', 'promotions', 'promo', 'promos', 'discount', 'discounts', 'savings', 'save', 'saves', 'saving', 
     'économie', 'économies', 'économiser', 'économisez', 'économisant', 'économisants',
