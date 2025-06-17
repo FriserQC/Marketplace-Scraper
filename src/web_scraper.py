@@ -193,7 +193,7 @@ async def fill_listings_description(listing: Listing, soup: BeautifulSoup, brows
 async def fill_listings_informations(listings: List[Listing], browser: webdriver.Chrome) -> List[Listing]:
     for listing in listings:
         print(f"\rProcessing listing number: {listings.index(listing) + 1} / {len(listings)} ", end="")
-        if listing.is_previous:
+        if listing.is_previous or listing.is_unwanted:
             continue
 
         browser.get(listing.url)
