@@ -43,7 +43,7 @@ class MyClient(discord.Client):
                 await asyncio.sleep(5 * 60)  # Task runs every 5 minutes
 
             except Exception as e:
-                print(f"Scraping task timed out. Retrying... {e}")
+                print(f"Scraping task error. Retrying... {e}")
 
     async def process_listings(self, listings: List, wanted_channel, misc_channel, home_channel, unwanted_channel):
         print(f'Sending listings in discord')
