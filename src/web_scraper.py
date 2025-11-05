@@ -40,7 +40,7 @@ def create_firefox_driver():
 
 def open_firefox_to_marketplace_free_items_page() -> webdriver.Firefox:
     browser = create_firefox_driver()
-    url = f"https://www.facebook.com/marketplace/{FACEBOOK_MARKETPLACE_LOCATION_ID}/search/?minPrice=0&maxPrice=0&sortBy=creation_time_descend&exact=false"
+    url = f"https://www.facebook.com/marketplace/{FACEBOOK_MARKETPLACE_LOCATION_ID}/free/?sortBy=creation_time_descend"
     browser.get(url)
     return browser
 
