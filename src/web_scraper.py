@@ -45,35 +45,64 @@ def open_firefox_to_marketplace_free_items_page() -> webdriver.Firefox:
     return browser
 
 def close_log_in_popup(browser: webdriver.Firefox):
-    try:
-        close_button = WebDriverWait(browser, 5).until(
-            expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, "div[aria-label='Close']"))
-        )
-        close_button.click()
-    except:
-        pass
+    close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
+    close_button.click()
 
 async def close_log_in_popup_first_time(browser: webdriver.Firefox):
     await asyncio.sleep(2)
-    close_log_in_popup(browser)
+    try:
+        close_log_in_popup(browser)
+    except Exception as e:
+        print(f"Could not find or click the close button, retrying. Error: {e}")
+        await asyncio.sleep(10)
+        browser.quit()
+        browser = await open_firefox_to_marketplace_free_items_page()
+        await close_log_in_popup_first_time(browser)
 
 async def scroll_bottom_page(browser: webdriver.Firefox):
-    for _ in range(3):
-        browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        await asyncio.sleep(2)
+    await asyncio.sleep(2)
+    try:
+        last_height = browser.execute_script("return document.body.scrollHeight")
+        
+        while True:
+        
+            browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            await asyncio.sleep(2)
+
+            new_height = browser.execute_script("return document.body.scrollHeight")
+
+            if new_height == last_height:
+                break
+            
+            last_height = new_height
+        
+    except Exception as e:
+        print(f"A Scrolling Error occurred: {e}")
 
 async def click_see_more_description(browser: webdriver.Firefox, first_time=True):
+    await asyncio.sleep(2)
     try:
-        see_more_buttons = browser.find_elements(By.XPATH, "//div[contains(text(), 'See more')]")
-        if see_more_buttons:
-            for button in see_more_buttons:
-                try:
-                    button.click()
-                    await asyncio.sleep(0.5)
-                except ElementClickInterceptedException:
-                    pass
-    except:
-        pass
+        close_log_in_popup(browser)
+    except Exception as e:
+        print(f"Could not find or click the close button. Error: {e}")
+    
+    try:
+        see_more_div = browser.find_element(By.XPATH, "//div[@role='button' and contains(., 'See more')]")
+        see_more_button = see_more_div.find_element(By.XPATH, ".//span")
+        WebDriverWait(browser, 10).until(expected_conditions.element_to_be_clickable(see_more_button))
+        see_more_button.click()
+    except ElementClickInterceptedException as e:
+        if first_time:
+            print(f"Click intercepted by another element, retrying. Error: {e}")
+            await click_see_more_description(browser, False)
+        else:
+            print(f"Click intercepted by another element after retrying. Error: {e}")
+    except Exception as e:
+        if first_time:
+            print(f"Could not find or click the 'See more' button, retrying. Error: {e}")
+            await click_see_more_description(browser, False)
+        else:
+            print(f"Could not find or click the 'See more' button after retrying. Error: {e}")
 
 def get_listings_full_description(soup: BeautifulSoup, description_text: str) -> str:
     spans = soup.find_all('span')
@@ -188,15 +217,16 @@ def filter_previous_listings(previous_listings: List[str], listings: List[Listin
 
 async def scrape_marketplace_listings(previous_listings: List[str]) -> List[Listing]:
     browser = open_firefox_to_marketplace_free_items_page()
-    
-    try:
-        await close_log_in_popup_first_time(browser)
-        await scroll_bottom_page(browser)
-        
-        listings = extract_listings_informations_from_home_page(browser)
-        listings = await fill_listings_informations(listings, browser)
-        listings = filter_previous_listings(previous_listings, listings)
-        
-        return listings
-    finally:
-        browser.quit()
+    await close_log_in_popup_first_time(browser)
+    await scroll_bottom_page(browser)
+
+    listings = extract_listings_informations_from_home_page(browser)
+    listings = filter_previous_listings(previous_listings, listings)
+
+    print(f"Number of new listings found: {len([x for x in listings if not x.is_previous])}")
+
+    listings = await fill_listings_informations(listings, browser)
+    browser.quit()
+    listings = determine_categories(listings)
+
+    return listings
