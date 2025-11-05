@@ -3,11 +3,11 @@ import re
 import asyncio
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import ElementClickInterceptedException
-from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from data_filtering import is_unwanted_string, determine_categories
@@ -23,27 +23,25 @@ def refresh_html_soup(browser: webdriver.Chrome) -> BeautifulSoup:
     soup = BeautifulSoup(html, 'html.parser')
     return soup
 
-def open_headless_browser() -> webdriver.Chrome:
-    options = webdriver.ChromeOptions()
-    # options.add_argument('--no-sandbox')
-    # options.page_load_strategy = 'eager'
+def create_chrome_driver():
+    options = Options()
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--single-process")
+    options.add_argument("--disable-extensions")
+    options.binary_location = os.environ.get("CHROME_BIN", "/usr/bin/chromium")
 
-    options.add_argument('--headless')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("start-maximized")
-    options.add_argument("--window-size=2560,1440")
-    options.timeouts = {'pageLoad': 30000}
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-
-    browser = webdriver.Chrome(
-        options=options,
-        service=Service(ChromeDriverManager().install()),
-    )
-
-    return browser
+    # Use system chromedriver installed via apt (matches Chromium version)
+    chromedriver_path = os.environ.get("CHROMEDRIVER_PATH", "/usr/bin/chromedriver")
+    service = Service(chromedriver_path)
+    driver = webdriver.Chrome(service=service, options=options)
+    return driver
 
 def open_chrome_to_marketplace_free_items_page() -> webdriver.Chrome:
-    browser = open_headless_browser()
+    browser = create_chrome_driver()
 
     url = f"https://www.facebook.com/marketplace/{FACEBOOK_MARKETPLACE_LOCATION_ID}/free/?sortBy=creation_time_descend"
     browser.get(url)
