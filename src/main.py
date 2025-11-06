@@ -77,6 +77,7 @@ class MyClient(discord.Client):
 client = MyClient(intents=discord.Intents.default())
 
 try:
+    print("token is : " + TOKEN)
     client.run(TOKEN, reconnect=True, log_level=40)
 except discord.HTTPException as e:
     # Check for rate limit (HTTP 429)
