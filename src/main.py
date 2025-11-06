@@ -89,5 +89,5 @@ except discord.HTTPException as e:
 except Exception as e:
     print(f"An unexpected error occurred while running the bot: {e}")
 finally:
-    os.system("python restarter.py")
+    os.system("python src/restarter.py")
     os.system('kill 1')
