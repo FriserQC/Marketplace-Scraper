@@ -8,7 +8,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import ElementClickInterceptedException
-from webdriver_manager.firefox import GeckoDriverManager
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from data_filtering import is_unwanted_string, determine_categories
@@ -33,8 +32,9 @@ def create_firefox_driver():
     options.add_argument("--width=1920")
     options.add_argument("--height=1080")
     
-    # Auto-download and manage geckodriver
-    service = Service(GeckoDriverManager().install())
+    # Use system geckodriver installed via apt (matches Firefox ESR)
+    geckodriver_path = os.environ.get("GECKODRIVER_PATH", "/usr/local/bin/geckodriver")
+    service = Service(geckodriver_path)
     driver = webdriver.Firefox(service=service, options=options)
     return driver
 
