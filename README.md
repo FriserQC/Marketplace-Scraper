@@ -15,22 +15,26 @@ You need a discord bot that can send messages on channels.
 
 ### 1. Create your `.env` file
 
-Create a `.env` file in the project root with the following parameters:
+Copy the `.env.example` file to `.env` and fill in your values:
 
-```env
-DISCORD_TOKEN=your_discord_bot_token
-FREE_WANTED_CHANNEL_ID=your_channel_id
-FREE_MISC_CHANNEL_ID=your_channel_id
-FREE_HOME_CHANNEL_ID=your_channel_id
-FREE_UNWANTED_CHANNEL_ID=your_channel_id
-FACEBOOK_MARKETPLACE_LOCATION_ID=your_city_location_id
+```bash
+cp .env.example .env
 ```
+
+**Where to find these values:**
+- **DISCORD_TOKEN**: Create a Discord bot at [Discord Developer Portal](https://discord.com/developers/applications)
+- **Channel IDs**: Right-click on Discord channels → "Copy Channel ID" (enable Developer Mode in Discord settings)
+- **FACEBOOK_MARKETPLACE_LOCATION_ID**: See instructions below
 
 ### 2. Find your Facebook Marketplace City ID
 
-Select the city of your choosing in the marketplace and copy the value highlighted in the image below:
+1. Go to Facebook Marketplace in your browser
+2. Select your city from the location dropdown
+3. Copy the location string from the URL (see image below):
 
-![Exemple](docs/MarketplaceLocationStringExemple.png)
+![Example](docs/MarketplaceLocationStringExemple.png)
+
+Example: `https://www.facebook.com/marketplace/montreal/search/` → use `montreal`
 
 ---
 
@@ -132,6 +136,11 @@ docker logs marketplace-scraper
 docker compose logs -f
 ```
 
+### Verify environment variables are loaded:
+```bash
+docker exec marketplace-scraper printenv | grep DISCORD
+```
+
 ### Verify geckodriver version:
 ```bash
 docker exec marketplace-scraper /usr/local/bin/geckodriver --version
@@ -143,6 +152,20 @@ docker restart marketplace-scraper
 # or with compose
 docker compose restart
 ```
+
+### Common Issues:
+
+**"Improper token has been passed"**
+- Check your `DISCORD_TOKEN` in `.env` is correct
+- Ensure no extra spaces or quotes around the token
+
+**"Unable to locate element" (Firefox)**
+- Facebook may have changed their page structure
+- Check logs for specific error details
+
+**Container exits immediately**
+- Check logs: `docker logs marketplace-scraper`
+- Verify all required environment variables are set
 
 ---
 
