@@ -1,0 +1,14 @@
+# Development dependencies
+black==25.9.0
+pylint==4.0.2
+isort==7.0.0
+flake8==7.3.0
+mypy==1.18.2
+types-requests
+types-beautifulsoup4
+pre-commit==4.0.1
+pytest==8.3.3
+pytest-asyncio==0.24.0
+setuptools<81
+selenium
+discord.py

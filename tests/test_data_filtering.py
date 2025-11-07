@@ -1,66 +1,81 @@
+# pylint: disable=too-few-public-methods,import-error
+"""Tests for data filtering functionality."""
+
 import unittest
+
+from listing import Listing
 from src import data_filtering
 
-class DummyListing:
-    def __init__(self, title="", description="", general_category="", specific_category=""):
-        self.title = title
-        self.description = description
-        self.general_category = general_category
-        self.specific_category = specific_category
-        self.is_unwanted = False
-        self.is_wanted = False
-        self.is_home = False
 
 class TestDataFiltering(unittest.TestCase):
-    def test_word_is_in_string(self):
-        self.assertTrue(data_filtering.word_is_in_string("sale", "Big sale today!"))
-        self.assertFalse(data_filtering.word_is_in_string("sale", "Big sailing event!"))
+    """Test cases for data filtering functions."""
 
-    def test_is_unwanted_string(self):
-        self.assertTrue(data_filtering.is_unwanted_string("Listing for $10!"))
-        self.assertTrue(data_filtering.is_unwanted_string("12 Listing for $!"))
-        self.assertTrue(data_filtering.is_unwanted_string("Listing for $! 12"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for $0!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for 0$!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for 0 $!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for $ 0!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for 0.0 $!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for $ 0.0!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for 0. 0 $!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for $ 0. 0!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for 0 .0 $!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for $ 0 .0!"))
-        self.assertFalse(data_filtering.is_unwanted_string("12 Listing for 0 $!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for $ 0! 12"))
-        self.assertFalse(data_filtering.is_unwanted_string("12 Listing for $ 0!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for 0 $! 12"))
-        self.assertFalse(data_filtering.is_unwanted_string("12 Listing for $ 0nice!"))
-        self.assertFalse(data_filtering.is_unwanted_string("Listing for0 $! 12"))
-        self.assertFalse(data_filtering.is_unwanted_string("Completely free item!"))
+    def test_is_unwanted_string_with_iso(self):
+        """Test that ISO string is unwanted."""
+        self.assertTrue(data_filtering.is_unwanted_string("ISO: some item"))
+        self.assertTrue(data_filtering.is_unwanted_string("iso something"))
 
-    def test_determine_categories_unwanted(self):
-        listing = DummyListing(description="This is for sale", general_category="Vehicles", specific_category="")
-        listings = [listing]
-        data_filtering.determine_categories(listings)
-        self.assertTrue(listing.is_unwanted)
-        self.assertFalse(listing.is_wanted)
-        self.assertFalse(listing.is_home)
+    def test_is_unwanted_string_with_wtb(self):
+        """Test that WTB string is unwanted."""
+        self.assertTrue(data_filtering.is_unwanted_string("WTB: gaming console"))
+        self.assertTrue(data_filtering.is_unwanted_string("wtb laptop"))
 
-    def test_determine_categories_wanted(self):
-        listing = DummyListing(description="Brand new CPU", general_category="Electronics", specific_category="CPUs/Processors")
-        listings = [listing]
-        data_filtering.determine_categories(listings)
-        self.assertTrue(listing.is_wanted)
-        self.assertFalse(listing.is_unwanted)
-        self.assertFalse(listing.is_home)
+    def test_is_unwanted_string_with_wanted(self):
+        """Test that 'wanted' string is unwanted."""
+        self.assertTrue(data_filtering.is_unwanted_string("wanted: furniture"))
+        self.assertTrue(data_filtering.is_unwanted_string("Wanted bike"))
 
-    def test_determine_categories_home(self):
-        listing = DummyListing(title="Beautiful sofa", description="Comfortable and stylish", general_category="Home Goods", specific_category="")
-        listings = [listing]
-        data_filtering.determine_categories(listings)
-        self.assertTrue(listing.is_home)
-        self.assertFalse(listing.is_unwanted)
-        self.assertFalse(listing.is_wanted)
+    def test_is_unwanted_string_normal_title(self):
+        """Test that normal titles are not unwanted."""
+        self.assertFalse(data_filtering.is_unwanted_string("Free couch"))
+        self.assertFalse(data_filtering.is_unwanted_string("Table for sale"))
+
+    def test_determine_categories_with_electronics(self):
+        """Test electronics category detection."""
+        listing = Listing(
+            title="laptop",
+            location="Montreal",
+            url="http://test.com",
+            img_url="",
+        )
+        listing.description = "old laptop"
+        listing.general_category = "Electronics"
+        listing.specific_category = "Computers"
+
+        listings = data_filtering.determine_categories([listing])
+        self.assertTrue(listings[0].is_wanted)
+
+    def test_determine_categories_with_furniture(self):
+        """Test furniture category detection."""
+        listing = Listing(
+            title="chair",
+            location="Montreal",
+            url="http://test.com",
+            img_url="",
+        )
+        listing.description = "wooden chair"
+        listing.general_category = "Furniture"
+        listing.specific_category = "Chairs"
+
+        listings = data_filtering.determine_categories([listing])
+        self.assertTrue(listings[0].is_home)
+
+    def test_determine_categories_with_misc(self):
+        """Test miscellaneous category detection."""
+        listing = Listing(
+            title="random item",
+            location="Montreal",
+            url="http://test.com",
+            img_url="",
+        )
+        listing.description = "some random thing"
+        listing.general_category = "Other"
+        listing.specific_category = "Miscellaneous"
+
+        listings = data_filtering.determine_categories([listing])
+        self.assertFalse(listings[0].is_wanted)
+        self.assertFalse(listings[0].is_home)
+
 
 if __name__ == "__main__":
     unittest.main()

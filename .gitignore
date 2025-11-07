@@ -76,10 +76,11 @@ docker-compose.override.yml
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# mypy
+# Type checking
 .mypy_cache/
 .dmypy.json
 dmypy.json
+.pyre/
 
 # Selenium
 geckodriver.log

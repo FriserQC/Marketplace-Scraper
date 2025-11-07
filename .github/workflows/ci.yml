@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure Docker is available
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Creer fichier .env (from GitHub Secrets)
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          FREE_WANTED_CHANNEL_ID: ${{ secrets.FREE_WANTED_CHANNEL_ID }}
+          FREE_MISC_CHANNEL_ID: ${{ secrets.FREE_MISC_CHANNEL_ID }}
+          FREE_HOME_CHANNEL_ID: ${{ secrets.FREE_HOME_CHANNEL_ID }}
+          FREE_UNWANTED_CHANNEL_ID: ${{ secrets.FREE_UNWANTED_CHANNEL_ID }}
+          FACEBOOK_MARKETPLACE_LOCATION_ID: ${{ secrets.FACEBOOK_MARKETPLACE_LOCATION_ID }}
+        run: |
+          echo "DISCORD_TOKEN=${DISCORD_TOKEN}" > .env
+          echo "FREE_WANTED_CHANNEL_ID=${FREE_WANTED_CHANNEL_ID}" >> .env
+          echo "FREE_MISC_CHANNEL_ID=${FREE_MISC_CHANNEL_ID}" >> .env
+          echo "FREE_HOME_CHANNEL_ID=${FREE_HOME_CHANNEL_ID}" >> .env
+          echo "FREE_UNWANTED_CHANNEL_ID=${FREE_UNWANTED_CHANNEL_ID}" >> .env
+          echo "FACEBOOK_MARKETPLACE_LOCATION_ID=${FACEBOOK_MARKETPLACE_LOCATION_ID}" >> .env
+
+      - name: Build Docker images
+        run: |
+          docker compose build --progress=plain
+
+      - name: Run pytest inside a compose container
+        run: |
+          docker compose run --rm marketplace_scraper sh -c "PYTHONPATH=/app pytest -v tests --tb=short"
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== marketplace_scraper Logs ==="
+          docker compose logs marketplace_scraper || true

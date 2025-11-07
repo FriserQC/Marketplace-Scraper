@@ -98,31 +98,6 @@ This project is fully compatible with Raspberry Pi (ARM64/aarch64 architecture).
 - Raspberry Pi 3/4/5 with ARM64 OS
 - Docker and Docker Compose installed
 
-### Installation steps:
-
-**1. Install Docker on Raspberry Pi:**
-```bash
-curl -sSL https://get.docker.com | sh
-sudo usermod -aG docker $USER
-# Log out and back in for group changes to take effect
-```
-
-**2. Install Docker Compose:**
-```bash
-sudo apt-get update
-sudo apt-get install docker-compose-plugin
-```
-
-**3. Clone and run:**
-```bash
-git clone https://github.com/yourusername/MarketplaceScraper.git
-cd MarketplaceScraper
-cp .env.example .env
-# Edit .env with your values
-nano .env
-docker compose up -d --build
-```
-
 **The Dockerfile automatically detects ARM architecture and installs the correct Firefox + geckodriver versions.**
 
 ### Performance on Raspberry Pi:
@@ -150,43 +125,6 @@ docker compose up -d --build
 - **audioop-lts 0.2.1** - Python 3.13 compatibility for discord.py
 
 ---
-
-## Troubleshooting
-
-### Check container logs:
-```bash
-docker logs marketplace-scraper
-# or with compose
-docker compose logs -f
-```
-
-### Check last 100 lines:
-```bash
-docker logs --tail 100 marketplace-scraper
-```
-
-### Verify environment variables are loaded:
-```bash
-docker exec marketplace-scraper printenv | grep DISCORD
-```
-
-### Verify Firefox and geckodriver:
-```bash
-docker exec marketplace-scraper firefox --version
-docker exec marketplace-scraper /usr/local/bin/geckodriver --version
-```
-
-### Interactive shell access:
-```bash
-docker exec -it marketplace-scraper /bin/sh
-```
-
-### Restart the container:
-```bash
-docker restart marketplace-scraper
-# or with compose
-docker compose restart
-```
 
 ### Common Issues
 
@@ -219,25 +157,22 @@ docker compose restart
 - Compiling Python packages with C extensions takes longer
 - Use `--no-cache` only when necessary
 
----
+### Pre-commit hook
 
-## Maintenance
+A pre-commit hook is included to help keep code quality consistent before commits. It runs checks/formatters locally (examples: black, isort, mypy, flake8) as configured in .pre-commit-config.yaml.
 
-### Update to latest version:
+Install and enable the hook (Windows / local dev):
+
 ```bash
-git pull
-docker compose build --no-cache
-docker compose up -d
+python -m pip install --upgrade pip
+pip install pre-commit
+pre-commit install
 ```
 
-### View resource usage:
-```bash
-docker stats marketplace-scraper
-```
+Run the hooks against all files (useful on first setup):
 
-### Clean up old images:
 ```bash
-docker image prune -a
+pre-commit run --all-files
 ```
 
 ---
