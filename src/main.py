@@ -80,24 +80,20 @@ async def main():
     try:
         await client.start(TOKEN, reconnect=True)
     except discord.HTTPException as e:
-        # Check for rate limit (HTTP 429)
         if e.status == 429:
             retry_after = e.response.headers.get("Retry-After")
-            message = f"Rate limit hit! Retry after: {retry_after} seconds."
-            print(message)
+            print(f"Rate limit hit! Retry after: {retry_after} seconds.")
         else:
             print(f"HTTPException occurred: {e}")
     except Exception as e:
         print(f"An unexpected error occurred while running the bot: {e}")
     finally:
-        # Properly close the connection
         if not client.is_closed():
             await client.close()
         
         # Give time for cleanup
         await asyncio.sleep(1)
-        
-        # Restart (use correct path for container)
+
         os.system("python src/restarter.py")
         os.system('kill 1')
 

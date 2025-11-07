@@ -44,20 +44,30 @@ def open_firefox_to_marketplace_free_items_page() -> webdriver.Firefox:
     browser.get(url)
     return browser
 
-def close_log_in_popup(browser: webdriver.Firefox):
-    close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
-    close_button.click()
-
-async def close_log_in_popup_first_time(browser: webdriver.Firefox):
+async def close_log_in_popup(browser: webdriver.Firefox):
     await asyncio.sleep(2)
     try:
-        close_log_in_popup(browser)
+        # Try multiple selectors for the close button
+        selectors = [
+            (By.XPATH, "//div[@aria-label='Close' and @role='button']"),
+            (By.XPATH, "//div[contains(@aria-label, 'Close')]"),
+            (By.CSS_SELECTOR, "div[aria-label='Close']"),
+            (By.CSS_SELECTOR, "[aria-label*='Close']")
+        ]
+        
+        for by, selector in selectors:
+            try:
+                close_button = WebDriverWait(browser, 3).until(
+                    expected_conditions.element_to_be_clickable((by, selector))
+                )
+                close_button.click()
+                return
+            except:
+                continue
+        
+        print("No close button found, continuing anyway")
     except Exception as e:
-        print(f"Could not find or click the close button, retrying. Error: {e}")
-        await asyncio.sleep(10)
-        browser.quit()
-        browser = await open_firefox_to_marketplace_free_items_page()
-        await close_log_in_popup_first_time(browser)
+        print(f"Could not close popup: {e}")
 
 async def scroll_bottom_page(browser: webdriver.Firefox):
     await asyncio.sleep(2)
@@ -82,7 +92,7 @@ async def scroll_bottom_page(browser: webdriver.Firefox):
 async def click_see_more_description(browser: webdriver.Firefox, first_time=True):
     await asyncio.sleep(2)
     try:
-        close_log_in_popup(browser)
+        await close_log_in_popup(browser)
     except Exception as e:
         print(f"Could not find or click the close button. Error: {e}")
     
@@ -94,13 +104,13 @@ async def click_see_more_description(browser: webdriver.Firefox, first_time=True
     except ElementClickInterceptedException as e:
         if first_time:
             print(f"Click intercepted by another element, retrying. Error: {e}")
-            await click_see_more_description(browser, False)
+            await click_see_more_description(browser, first_time=False)
         else:
             print(f"Click intercepted by another element after retrying. Error: {e}")
     except Exception as e:
         if first_time:
             print(f"Could not find or click the 'See more' button, retrying. Error: {e}")
-            await click_see_more_description(browser, False)
+            await click_see_more_description(browser, first_time=False)
         else:
             print(f"Could not find or click the 'See more' button after retrying. Error: {e}")
 
@@ -217,16 +227,15 @@ def filter_previous_listings(previous_listings: List[str], listings: List[Listin
 
 async def scrape_marketplace_listings(previous_listings: List[str]) -> List[Listing]:
     browser = open_firefox_to_marketplace_free_items_page()
-    await close_log_in_popup_first_time(browser)
-    await scroll_bottom_page(browser)
-
-    listings = extract_listings_informations_from_home_page(browser)
-    listings = filter_previous_listings(previous_listings, listings)
-
-    print(f"Number of new listings found: {len([x for x in listings if not x.is_previous])}")
-
-    listings = await fill_listings_informations(listings, browser)
-    browser.quit()
-    listings = determine_categories(listings)
-
-    return listings
+    
+    try:
+        await close_log_in_popup(browser)
+        await scroll_bottom_page(browser)
+        
+        listings = extract_listings_informations_from_home_page(browser)
+        listings = await fill_listings_informations(listings, browser)
+        listings = filter_previous_listings(previous_listings, listings)
+        
+        return listings
+    finally:
+        browser.quit()
