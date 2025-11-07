@@ -2,12 +2,12 @@ import os
 import re
 import asyncio
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import ElementClickInterceptedException
-from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from data_filtering import is_unwanted_string, determine_categories
@@ -18,54 +18,58 @@ load_dotenv()
 
 FACEBOOK_MARKETPLACE_LOCATION_ID = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
 
-def refresh_html_soup(browser: webdriver.Chrome) -> BeautifulSoup:
+def refresh_html_soup(browser: webdriver.Firefox) -> BeautifulSoup:
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     return soup
 
-def open_headless_browser() -> webdriver.Chrome:
-    options = webdriver.ChromeOptions()
-    # options.add_argument('--no-sandbox')
-    # options.page_load_strategy = 'eager'
+def create_firefox_driver():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--width=1920")
+    options.add_argument("--height=1080")
+    
+    # Use system geckodriver installed via apt (matches Firefox ESR)
+    geckodriver_path = os.environ.get("GECKODRIVER_PATH", "/usr/local/bin/geckodriver")
+    service = Service(geckodriver_path)
+    driver = webdriver.Firefox(service=service, options=options)
+    return driver
 
-    options.add_argument('--headless')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("start-maximized")
-    options.add_argument("--window-size=2560,1440")
-    options.timeouts = {'pageLoad': 30000}
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-
-    browser = webdriver.Chrome(
-        options=options,
-        service=Service(ChromeDriverManager().install()),
-    )
-
-    return browser
-
-def open_chrome_to_marketplace_free_items_page() -> webdriver.Chrome:
-    browser = open_headless_browser()
-
+def open_firefox_to_marketplace_free_items_page() -> webdriver.Firefox:
+    browser = create_firefox_driver()
     url = f"https://www.facebook.com/marketplace/{FACEBOOK_MARKETPLACE_LOCATION_ID}/free/?sortBy=creation_time_descend"
     browser.get(url)
-
     return browser
 
-def close_log_in_popup(browser: webdriver.Chrome):
-    close_button = browser.find_element(By.XPATH, '//div[@aria-label="Close" and @role="button"]')
-    close_button.click()
-
-async def close_log_in_popup_first_time(browser: webdriver.Chrome):
+async def close_log_in_popup(browser: webdriver.Firefox):
     await asyncio.sleep(2)
     try:
-        close_log_in_popup(browser)
+        # Try multiple selectors for the close button
+        selectors = [
+            (By.XPATH, "//div[@aria-label='Close' and @role='button']"),
+            (By.XPATH, "//div[contains(@aria-label, 'Close')]"),
+            (By.CSS_SELECTOR, "div[aria-label='Close']"),
+            (By.CSS_SELECTOR, "[aria-label*='Close']")
+        ]
+        
+        for by, selector in selectors:
+            try:
+                close_button = WebDriverWait(browser, 3).until(
+                    expected_conditions.element_to_be_clickable((by, selector))
+                )
+                close_button.click()
+                return
+            except:
+                continue
+        
+        print("No close button found, continuing anyway")
     except Exception as e:
-        print(f"Could not find or click the close button, retrying. Error: {e}")
-        await asyncio.sleep(10)
-        browser.quit()
-        browser = await open_chrome_to_marketplace_free_items_page()
-        await close_log_in_popup_first_time(browser)
+        print(f"Could not close popup: {e}")
 
-async def scroll_bottom_page(browser: webdriver.Chrome):
+async def scroll_bottom_page(browser: webdriver.Firefox):
     await asyncio.sleep(2)
     try:
         last_height = browser.execute_script("return document.body.scrollHeight")
@@ -85,10 +89,10 @@ async def scroll_bottom_page(browser: webdriver.Chrome):
     except Exception as e:
         print(f"A Scrolling Error occurred: {e}")
 
-async def click_see_more_description(browser: webdriver.Chrome, first_time=True):
+async def click_see_more_description(browser: webdriver.Firefox, first_time=True):
     await asyncio.sleep(2)
     try:
-        close_log_in_popup(browser)
+        await close_log_in_popup(browser)
     except Exception as e:
         print(f"Could not find or click the close button. Error: {e}")
     
@@ -100,13 +104,13 @@ async def click_see_more_description(browser: webdriver.Chrome, first_time=True)
     except ElementClickInterceptedException as e:
         if first_time:
             print(f"Click intercepted by another element, retrying. Error: {e}")
-            await click_see_more_description(browser, False)
+            await click_see_more_description(browser, first_time=False)
         else:
             print(f"Click intercepted by another element after retrying. Error: {e}")
     except Exception as e:
         if first_time:
             print(f"Could not find or click the 'See more' button, retrying. Error: {e}")
-            await click_see_more_description(browser, False)
+            await click_see_more_description(browser, first_time=False)
         else:
             print(f"Could not find or click the 'See more' button after retrying. Error: {e}")
 
@@ -118,7 +122,7 @@ def get_listings_full_description(soup: BeautifulSoup, description_text: str) ->
             return span
     return None
 
-def extract_listings_informations_from_home_page(browser: webdriver.Chrome) -> List[Listing]:
+def extract_listings_informations_from_home_page(browser: webdriver.Firefox) -> List[Listing]:
     soup = refresh_html_soup(browser)
     links = soup.find_all('a', attrs={'href': re.compile(r'\/marketplace\/item\/')})
 
@@ -161,7 +165,7 @@ def fill_listings_specific_category(listing: Listing, soup: BeautifulSoup) -> Li
 
     return listing
 
-async def fill_listings_description(listing: Listing, soup: BeautifulSoup, browser: webdriver.Chrome) -> Listing:
+async def fill_listings_description(listing: Listing, soup: BeautifulSoup, browser: webdriver.Firefox) -> Listing:
     try:
         description_text = ""
         description = soup.find('meta', attrs={'name': 'description'})['content']
@@ -190,7 +194,7 @@ async def fill_listings_description(listing: Listing, soup: BeautifulSoup, brows
 
     return listing
 
-async def fill_listings_informations(listings: List[Listing], browser: webdriver.Chrome) -> List[Listing]:
+async def fill_listings_informations(listings: List[Listing], browser: webdriver.Firefox) -> List[Listing]:
     for listing in listings:
         print(f"\rProcessing listing number: {listings.index(listing) + 1} / {len(listings)} ", end="")
         if listing.is_previous or listing.is_unwanted:
@@ -222,17 +226,16 @@ def filter_previous_listings(previous_listings: List[str], listings: List[Listin
     return listings
 
 async def scrape_marketplace_listings(previous_listings: List[str]) -> List[Listing]:
-    browser = open_chrome_to_marketplace_free_items_page()
-    await close_log_in_popup_first_time(browser)
-    await scroll_bottom_page(browser)
-
-    listings = extract_listings_informations_from_home_page(browser)
-    listings = filter_previous_listings(previous_listings, listings)
-
-    print(f"Number of new listings found: {len([x for x in listings if not x.is_previous])}")
-
-    listings = await fill_listings_informations(listings, browser)
-    browser.quit()
-    listings = determine_categories(listings)
-
-    return listings
+    browser = open_firefox_to_marketplace_free_items_page()
+    
+    try:
+        await close_log_in_popup(browser)
+        await scroll_bottom_page(browser)
+        
+        listings = extract_listings_informations_from_home_page(browser)
+        listings = await fill_listings_informations(listings, browser)
+        listings = filter_previous_listings(previous_listings, listings)
+        
+        return listings
+    finally:
+        browser.quit()

@@ -1,0 +1,17 @@
+services:
+  marketplace_scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: marketplace_scraper
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    shm_size: '1gb'
