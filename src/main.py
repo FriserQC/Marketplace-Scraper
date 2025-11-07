@@ -54,7 +54,10 @@ class MyClient(discord.Client):
             logger.info("Starting scraping cycle: %s", datetime.now().strftime("%H:%M %B %d, %Y"))
 
             try:
-                listings = await scrape_marketplace_listings(self.previous_listings)
+                # Offload blocking scraper to separate thread to not block discord event loop and aiohttp connections
+                listings = await asyncio.to_thread(
+                    lambda: asyncio.run(scrape_marketplace_listings(self.previous_listings))
+                )
                 await self.process_listings(
                     listings,
                     wanted_channel,
