@@ -89,4 +89,3 @@ ENV/
 # Local development
 .env.local
 .env.development
-restarter.py

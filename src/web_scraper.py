@@ -94,25 +94,33 @@ async def click_see_more_description(browser: webdriver.Firefox, first_time=True
     try:
         await close_log_in_popup(browser)
     except Exception as e:
-        print(f"Could not find or click the close button. Error: {e}")
+        print(f"Could not close popup: {e}")
     
     try:
         see_more_div = browser.find_element(By.XPATH, "//div[@role='button' and contains(., 'See more')]")
         see_more_button = see_more_div.find_element(By.XPATH, ".//span")
         WebDriverWait(browser, 10).until(expected_conditions.element_to_be_clickable(see_more_button))
-        see_more_button.click()
+        try:
+            see_more_button.click()
+        except ElementClickInterceptedException:
+            print("Click intercepted, trying JavaScript click")
+            browser.execute_script("arguments[0].click();", see_more_button)
+            
     except ElementClickInterceptedException as e:
+        print(f"Click intercepted by another element, retrying. Error: {e}")
         if first_time:
-            print(f"Click intercepted by another element, retrying. Error: {e}")
-            await click_see_more_description(browser, first_time=False)
-        else:
-            print(f"Click intercepted by another element after retrying. Error: {e}")
+            # Scroll the element into view and try again
+            try:
+                see_more_div = browser.find_element(By.XPATH, "//div[@role='button' and contains(., 'See more')]")
+                browser.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", see_more_div)
+                await asyncio.sleep(2)
+                await close_log_in_popup(browser)
+                see_more_button = see_more_div.find_element(By.XPATH, ".//span")
+                browser.execute_script("arguments[0].click();", see_more_button)
+            except Exception as retry_error:
+                print(f"Click intercepted by another element after retrying. Error: {retry_error}")
     except Exception as e:
-        if first_time:
-            print(f"Could not find or click the 'See more' button, retrying. Error: {e}")
-            await click_see_more_description(browser, first_time=False)
-        else:
-            print(f"Could not find or click the 'See more' button after retrying. Error: {e}")
+        print(f"Could not click 'See more' button. Error: {e}")
 
 def get_listings_full_description(soup: BeautifulSoup, description_text: str) -> str:
     spans = soup.find_all('span')
