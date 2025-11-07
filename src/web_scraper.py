@@ -259,6 +259,7 @@ async def scrape_marketplace_listings(previous_listings: List[str]) -> List[List
         listings = extract_listings_informations_from_home_page(browser)
         listings = await fill_listings_informations(listings, browser)
         listings = filter_previous_listings(previous_listings, listings)
+        listings = determine_categories(listings)
         
         return listings
     finally:
