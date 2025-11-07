@@ -25,6 +25,23 @@ def refresh_html_soup(browser: webdriver.Firefox) -> BeautifulSoup:
 
 def create_firefox_driver():
     options = Options()
+    
+    # Try to find Firefox binary location
+    firefox_paths = [
+        "/usr/lib/firefox/firefox",  # Alpine
+        "/usr/bin/firefox",           # Alpine symlink
+        "/usr/bin/firefox-esr",       # Debian
+    ]
+    
+    firefox_binary = None
+    for path in firefox_paths:
+        if os.path.exists(path):
+            firefox_binary = path
+            break
+    
+    if firefox_binary:
+        options.binary_location = firefox_binary
+    
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
@@ -32,9 +49,8 @@ def create_firefox_driver():
     options.add_argument("--width=1920")
     options.add_argument("--height=1080")
     
-    # Use system geckodriver installed via apt (matches Firefox ESR)
-    geckodriver_path = os.environ.get("GECKODRIVER_PATH", "/usr/local/bin/geckodriver")
-    service = Service(geckodriver_path)
+    # Use system geckodriver (installed at /usr/local/bin/geckodriver)
+    service = Service("/usr/local/bin/geckodriver")
     driver = webdriver.Firefox(service=service, options=options)
     return driver
 
