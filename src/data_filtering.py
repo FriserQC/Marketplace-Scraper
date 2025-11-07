@@ -64,6 +64,11 @@ UNWANTED_WORDS = [
     "purschase",
     "purschases",
     "purschasing",
+    "for sale",
+    "for-sale",
+    "à vendre",
+    "a vendre",
+    "a-vendre",
     # Renting
     "louer",
     "rent",
@@ -229,7 +234,7 @@ UNWANTED_WORDS = [
     "négociations",
     "negotiation",
     "negotiations",
-    # Search
+    # Search / Wanted markers (added)
     "recherche",
     "recherches",
     "recherchons",
@@ -260,6 +265,9 @@ UNWANTED_WORDS = [
     "looking for a person",
     "looking for a company",
     "looking for a business",
+    "iso",
+    "wtb",
+    "wanted",
     # Exchange and Trade
     "échange",
     "echange",
@@ -881,28 +889,40 @@ def word_is_in_string(word: str, string_to_check: str) -> bool:
 
 
 def is_unwanted_string(string_to_check: str) -> bool:
-    string_to_check = string_to_check.lower().replace("\n", " ").strip()
+    string_to_check = (string_to_check or "").lower().replace("\n", " ").strip()
 
-    matches = re.finditer(r"(?:\d+(?:\.\d+)?\s*\$|\$\s*\d+(?:\.\d+)?|\$)", string_to_check)
+    # detect explicit monetary amounts like "$25", "25 $", "25.00$" or "25 usd"
+    matches = re.finditer(
+        r"(?:\$\s*\d+(?:\.\d+)?|\d+(?:\.\d+)?\s*\$|\d+(?:\.\d+)?\s*(?:usd|cad|eur|gbp))",
+        string_to_check,
+    )
     for match in matches:
         text = match.group()
-
-        if text.strip() == "$":
-            return True
-
         number_match = re.search(r"\d+(?:\.\d+)?", text)
         if number_match:
             value = float(number_match.group())
             if value != 0:
                 return True
 
+    # If a bare/placeholder dollar sign appears like "$!" or "$" at end, treat as unwanted
+    # but ignore explicit zero amounts like "$0" or "0 $"
+    if re.search(r"\$\s*(?:[^\w\s]|$)", string_to_check):
+        if not re.search(r"\$\s*0+(?:\.0+)?\b", string_to_check) and not re.search(
+            r"\b0+(?:\.0+)?\s*\$", string_to_check
+        ):
+            return True
+
     return any(word_is_in_string(word, string_to_check) for word in UNWANTED_WORDS)
 
 
 def determine_categories(listings: List) -> List:
     for listing in listings:
+        title = getattr(listing, "title", "") or ""
+        description = getattr(listing, "description", "") or ""
+        # Check title OR description for unwanted markers
         if (
-            is_unwanted_string(listing.description)
+            is_unwanted_string(title)
+            or is_unwanted_string(description)
             or listing.general_category in UNWANTED_CATEGORIES
             or listing.specific_category in UNWANTED_SPECIFIC_CATEGORIES
         ):
@@ -910,8 +930,8 @@ def determine_categories(listings: List) -> List:
         elif listing.general_category in WANTED_CATEGORIES or listing.specific_category in WANTED_SPECIFIC_CATEGORIES:
             listing.is_wanted = True
         elif (
-            any(word_is_in_string(word, listing.title) for word in HOME_WORDS)
-            or any(word_is_in_string(word, listing.description) for word in HOME_WORDS)
+            any(word_is_in_string(word, title) for word in HOME_WORDS)
+            or any(word_is_in_string(word, description) for word in HOME_WORDS)
             or any(word_is_in_string(word, listing.general_category) for word in HOME_WORDS)
             or any(word_is_in_string(word, listing.specific_category) for word in HOME_WORDS)
             or listing.general_category in HOME_CATEGORIES
