@@ -89,7 +89,7 @@ async def close_log_in_popup(browser: webdriver.Firefox):
                 )
                 close_button.click()
                 return
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 continue
 
         logger.warning("No close button found, continuing anyway")
@@ -174,7 +174,11 @@ def extract_listings_informations_from_home_page(browser: webdriver.Firefox) -> 
         {
             "text": "\n".join(listing_link.stripped_strings),
             "url": listing_link.get("href"),
-            "img_url": listing_link.find("img")["src"] if listing_link.find("img").has_attr("src") else None,
+            "img_url": (
+                listing_link.find("img")["src"]
+                if listing_link.find("img") and listing_link.find("img").has_attr("src")
+                else None
+            ),
         }
         for listing_link in links
     ]
@@ -185,8 +189,9 @@ def extract_listings_informations_from_home_page(browser: webdriver.Firefox) -> 
         title = " ".join(line for line in lines if line not in ["Free", "Pending", "·"] and "CA$" not in line)
         location = lines[-1]
         url = "https://www.facebook.com" + re.sub(r"\?.*", "", item["url"])
-        img_url = item["img_url"] if item["img_url"] else ""
-        extracted_data.append(Listing(title, location, url, img_url))
+        img_url = item["img_url"] or ""
+        listing: Listing = Listing(title=title, location=location, url=url, img_url=img_url)
+        extracted_data.append(listing)
 
     return extracted_data
 
@@ -302,6 +307,9 @@ async def scrape_marketplace_listings(previous_listings: List[Listing]) -> List[
         listings = filter_previous_listings(previous_listings, listings)
         listings = determine_categories(listings)
 
+        return listings
+    except Exception as exc:
+        logger.error("An error occurred during scraping: %s", exc)
         return listings
     finally:
         browser.quit()
