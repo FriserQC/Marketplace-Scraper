@@ -26,9 +26,22 @@ logger = logging.getLogger(__name__)
 
 def refresh_html_soup(browser: webdriver.Firefox) -> BeautifulSoup:
     """Refresh and parse the current page HTML."""
-    html = browser.page_source
-    soup = BeautifulSoup(html, "html.parser")
-    return soup
+    try:
+        html = browser.page_source
+        # Try html.parser first (faster, stricter)
+        soup = BeautifulSoup(html, "html.parser")
+        return soup
+    except Exception as exc:
+        logger.warning("html.parser failed (%s), falling back to lxml", exc)
+        try:
+            # Fallback to lxml which is more lenient
+            html = browser.page_source
+            soup = BeautifulSoup(html, "lxml")
+            return soup
+        except Exception as fallback_exc:
+            logger.error("Both parsers failed: %s. URL : %s", fallback_exc, browser.current_url)
+            # Return empty soup so code doesn't crash
+            return BeautifulSoup("", "html.parser")
 
 
 def create_firefox_driver():
@@ -137,7 +150,7 @@ async def click_see_more_description(browser: webdriver.Firefox, first_time=True
             browser.execute_script("arguments[0].click();", see_more_button)
 
     except ElementClickInterceptedException as exc:
-        logger.info("Click intercepted by another element, retrying. Error: %s", exc)
+        logger.error("Click intercepted by another element, retrying. Error: %s", exc)
         if first_time:
             # Scroll the element into view and try again
             try:
@@ -186,8 +199,9 @@ def extract_listings_informations_from_home_page(browser: webdriver.Firefox) -> 
     extracted_data = []
     for item in listing_data:
         lines = item["text"].split("\n")
-        title = " ".join(line for line in lines if line not in ["Free", "Pending", "·"] and "CA$" not in line)
-        location = lines[-1]
+        location = lines[-1] if lines else ""
+        # Build title from all lines except the last one (location), "Free", "Pending", "·", and lines with "CA$"
+        title = " ".join(line for line in lines[:-1] if line not in ["Free", "Pending", "·"] and "CA$" not in line)
         url = "https://www.facebook.com" + re.sub(r"\?.*", "", item["url"])
         img_url = item["img_url"] or ""
         listing: Listing = Listing(title=title, location=location, url=url, img_url=img_url)
@@ -261,9 +275,10 @@ async def fill_listings_description(listing: Listing, soup: BeautifulSoup, brows
 async def fill_listings_informations(listings: List[Listing], browser: webdriver.Firefox) -> List[Listing]:
     """Fill detailed information for all listings."""
     for listing in listings:
-        logger.info("Processing listing number: %d / %d", listings.index(listing) + 1, len(listings))
         if listing.is_previous or listing.is_unwanted:
             continue
+
+        logger.info("Processing listing number: %d / %d", listings.index(listing) + 1, len(listings))
 
         browser.get(listing.url)
         soup = refresh_html_soup(browser)
@@ -303,8 +318,8 @@ async def scrape_marketplace_listings(previous_listings: List[Listing]) -> List[
         await scroll_bottom_page(browser)
 
         listings = extract_listings_informations_from_home_page(browser)
-        listings = await fill_listings_informations(listings, browser)
         listings = filter_previous_listings(previous_listings, listings)
+        listings = await fill_listings_informations(listings, browser)
         listings = determine_categories(listings)
 
         return listings
