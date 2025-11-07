@@ -89,3 +89,11 @@ ENV/
 # Local development
 .env.local
 .env.development
+
+# pre-commit (ignore hook files and caches)
+.pre-commit-config.yaml
+.pre-commit/
+.pre-commit-hooks.yaml
+.cache/pre-commit/
+.git/hooks/pre-commit
+.git/hooks/pre-commit-*

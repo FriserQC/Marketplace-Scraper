@@ -38,7 +38,7 @@ jobs:
 
       - name: Run pytest inside a compose container
         run: |
-          docker compose run --rm marketplace_scraper sh -c "PYTHONPATH=/app pytest -v tests --tb=short"
+          docker compose run --rm marketplace_scraper sh -c "PYTHONPATH=/app/src:/app pytest -v tests --tb=short"
 
       - name: Show logs on failure
         if: failure()
