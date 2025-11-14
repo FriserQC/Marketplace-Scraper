@@ -18,10 +18,29 @@ class Config:
     FREE_HOME_CHANNEL_ID: int = int(os.getenv("FREE_HOME_CHANNEL_ID", None))
     FREE_UNWANTED_CHANNEL_ID: int = int(os.getenv("FREE_UNWANTED_CHANNEL_ID", None))
     FACEBOOK_MARKETPLACE_LOCATION_ID: str = os.getenv("FACEBOOK_MARKETPLACE_LOCATION_ID")
+    MARKETPLACE_FREE_SEARCH_URL: str = (
+        f"https://www.facebook.com/marketplace/{FACEBOOK_MARKETPLACE_LOCATION_ID}/free/?sortBy=creation_time_descend"
+    )
     MAX_PREVIOUS_LISTINGS: int = 1000
     SCRAPE_INTERVAL_MINUTES: int = 5
     GECKODRIVER_PATH: str = "/usr/local/bin/geckodriver"
     FIREFOX_BINARY_PATHS: list = None
+
+    # Browser and scraping configuration
+    BROWSER_VERSION_CHECK_TIMEOUT: int = 10
+    BROWSER_PAGE_LOAD_TIMEOUT: int = 180
+    BROWSER_SCRIPT_TIMEOUT: int = 180
+    BROWSER_IMPLICIT_WAIT: int = 10
+    BROWSER_POPUP_CLOSE_TIMEOUT: int = 3
+    BROWSER_SEE_MORE_TIMEOUT: int = 10
+    BROWSER_LISTING_LOAD_TIMEOUT: int = 30
+    GECKODRIVER_LOG_PATH: str = "/tmp/geckodriver.log"
+    BROWSER_USER_AGENT: str = (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    )
+    REQUESTS_TIMEOUT: int = 30
+    SLEEP_DELAY: int = 2
 
     def __post_init__(self):
         """Set default Firefox binary paths."""

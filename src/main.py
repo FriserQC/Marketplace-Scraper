@@ -53,32 +53,55 @@ class MyClient(discord.Client):
         while not self.is_closed():
             logger.info("Starting scraping cycle: %s", datetime.now().strftime("%H:%M %B %d, %Y"))
 
-            try:
-                # Offload blocking scraper to separate thread to not block discord event loop and aiohttp connections
-                listings = await asyncio.to_thread(
-                    lambda: asyncio.run(scrape_marketplace_listings(self.previous_listings))
-                )
-                await self.process_listings(
-                    listings,
-                    wanted_channel,
-                    misc_channel,
-                    home_channel,
-                    unwanted_channel,
-                )
+            max_retries = 3
+            retry_count = 0
 
-                logger.info(
-                    "Scraping cycle completed. Waiting %d minutes for next cycle.",
-                    config.SCRAPE_INTERVAL_MINUTES,
-                )
-                await asyncio.sleep(config.SCRAPE_INTERVAL_MINUTES * 60)
+            while retry_count < max_retries:
+                try:
+                    # Offload scraper to separate thread to not block discord event loop and aiohttp connections
+                    listings = await asyncio.to_thread(
+                        lambda: asyncio.run(scrape_marketplace_listings(self.previous_listings))
+                    )
 
-            except Exception as exc:
-                logger.exception(
-                    "Scraping task error. Retrying in %d minutes... %s",
-                    config.SCRAPE_INTERVAL_MINUTES,
-                    exc,
-                )
-                await asyncio.sleep(config.SCRAPE_INTERVAL_MINUTES * 60)
+                    if listings:  # Only process if we got listings
+                        await self.process_listings(
+                            listings,
+                            wanted_channel,
+                            misc_channel,
+                            home_channel,
+                            unwanted_channel,
+                        )
+                        break  # Success, exit retry loop
+
+                    retry_count += 1
+                    if retry_count < max_retries:
+                        logger.warning("No listings returned, retrying (attempt %d/%d)", retry_count + 1, max_retries)
+                        await asyncio.sleep(10)  # Wait 10 seconds before retry
+                    else:
+                        logger.error("Failed to get listings after %d attempts", max_retries)
+
+                except Exception as exc:
+                    retry_count += 1
+                    if retry_count < max_retries:
+                        logger.warning(
+                            "Scraping attempt %d/%d failed: %s. Retrying in 10 seconds...",
+                            retry_count,
+                            max_retries,
+                            exc,
+                        )
+                        await asyncio.sleep(10)
+                    else:
+                        logger.error(
+                            "Scraping failed after %d attempts: %s",
+                            max_retries,
+                            exc,
+                        )
+
+            logger.info(
+                "Scraping cycle completed. Waiting %d minutes for next cycle.",
+                config.SCRAPE_INTERVAL_MINUTES,
+            )
+            await asyncio.sleep(config.SCRAPE_INTERVAL_MINUTES * 60)
 
     async def process_listings(
         self,

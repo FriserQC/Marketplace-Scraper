@@ -1,9 +1,8 @@
-"""Web scraping functionality for Facebook Marketplace."""
-
 import asyncio
 import logging
 import os
 import re
+import subprocess
 from typing import List, Optional
 
 from bs4 import BeautifulSoup, Tag
@@ -22,6 +21,52 @@ from listing import Listing
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
+
+def check_browser_versions():
+    """Check Firefox and GeckoDriver versions for compatibility."""
+    try:
+
+        # Check Firefox version - try all configured paths
+        firefox_binary = None
+        firefox_version = None
+        for path in config.FIREFOX_BINARY_PATHS:
+            if os.path.exists(path):
+                try:
+                    result = subprocess.run(
+                        [path, "--version"],
+                        capture_output=True,
+                        text=True,
+                        timeout=config.BROWSER_VERSION_CHECK_TIMEOUT,
+                        check=False,
+                    )
+                    if result.returncode == 0:
+                        firefox_binary = path
+                        firefox_version = result.stdout.strip()
+                        break
+                except (subprocess.TimeoutExpired, subprocess.CalledProcessError, FileNotFoundError):
+                    continue
+
+        if firefox_version:
+            logger.debug("Firefox version (%s): %s", firefox_binary, firefox_version)
+        else:
+            logger.warning("Could not determine Firefox version from any configured path")
+
+        # Check GeckoDriver version
+        try:
+            geckodriver_version = subprocess.run(
+                [config.GECKODRIVER_PATH, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=config.BROWSER_VERSION_CHECK_TIMEOUT,
+                check=False,
+            ).stdout.strip()
+            logger.debug("GeckoDriver version: %s", geckodriver_version)
+        except (subprocess.TimeoutExpired, subprocess.CalledProcessError, FileNotFoundError) as e:
+            logger.warning("Could not check GeckoDriver version: %s", e)
+
+    except Exception as e:
+        logger.warning("Could not check browser versions: %s", e)
 
 
 def refresh_html_soup(browser: webdriver.Firefox) -> BeautifulSoup:
@@ -44,48 +89,75 @@ def refresh_html_soup(browser: webdriver.Firefox) -> BeautifulSoup:
             return BeautifulSoup("", "html.parser")
 
 
-def create_firefox_driver():
-    """Create and configure Firefox webdriver."""
-    options = Options()
+def create_firefox_driver() -> Optional[webdriver.Firefox]:
+    """Create and configure Firefox webdriver with retry logic."""
 
-    # Try to find Firefox binary location
-    firefox_binary = None
-    for path in config.FIREFOX_BINARY_PATHS:
-        if os.path.exists(path):
-            firefox_binary = path
-            break
+    try:
+        options = Options()
 
-    if firefox_binary:
-        options.binary_location = firefox_binary
-        logger.info("Using Firefox binary: %s", firefox_binary)
+        # Try to find Firefox binary location
+        firefox_binary = None
+        for path in config.FIREFOX_BINARY_PATHS:
+            if os.path.exists(path):
+                firefox_binary = path
+                break
 
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--width=1920")
-    options.add_argument("--height=1080")
+        if firefox_binary:
+            options.binary_location = firefox_binary
+            logger.info("Using Firefox binary: %s", firefox_binary)
 
-    # Use system geckodriver
-    service = Service(config.GECKODRIVER_PATH)
-    driver = webdriver.Firefox(service=service, options=options)
-    return driver
+        # Essential Firefox options for stability
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-software-rasterizer")
+        options.add_argument("--disable-background-timer-throttling")
+        options.add_argument("--disable-backgrounding-occluded-windows")
+        options.add_argument("--disable-renderer-backgrounding")
+        options.add_argument("--disable-features=VizDisplayCompositor")
+        options.add_argument("--width=1920")
+        options.add_argument("--height=1080")
+        options.add_argument("--disable-extensions")
+        options.add_argument("--disable-plugins")
+        options.add_argument("--disable-images")  # Speed up loading
+        options.set_preference("dom.webdriver.enabled", False)
+        options.set_preference("useAutomationExtension", False)
+        options.set_preference("general.useragent.override", config.BROWSER_USER_AGENT)
+
+        # Use system geckodriver
+        service = Service(config.GECKODRIVER_PATH)
+        service.log_path = config.GECKODRIVER_LOG_PATH  # Enable logging for debugging
+
+        driver = webdriver.Firefox(service=service, options=options)
+
+        # Set timeouts to handle slow page loads
+        driver.set_page_load_timeout(config.BROWSER_PAGE_LOAD_TIMEOUT)  # 3 minutes for page load
+        driver.set_script_timeout(config.BROWSER_SCRIPT_TIMEOUT)  # 3 minutes for JavaScript execution
+        driver.implicitly_wait(config.BROWSER_IMPLICIT_WAIT)  # 10 seconds implicit wait for elements
+
+        return driver
+
+    except Exception as e:
+        logger.warning("Failed to create Firefox driver %s", e)
+
+    return None
 
 
 def open_firefox_to_marketplace_free_items_page() -> webdriver.Firefox:
     """Open Firefox to marketplace free items page."""
     browser = create_firefox_driver()
-    marketplace_url = (
-        f"https://www.facebook.com/marketplace/{config.FACEBOOK_MARKETPLACE_LOCATION_ID}/"
-        f"free/?sortBy=creation_time_descend"
-    )
-    browser.get(marketplace_url)
+    try:
+        browser.get(config.MARKETPLACE_FREE_SEARCH_URL)
+    except Exception as exc:
+        logger.warning("Timeout or error loading marketplace page (retrying may help): %s", exc)
+        # Page may have partially loaded, continue anyway
     return browser
 
 
 async def close_log_in_popup(browser: webdriver.Firefox):
     """Attempt to close Facebook login popup."""
-    await asyncio.sleep(2)
+    await asyncio.sleep(config.SLEEP_DELAY)
     try:
         # Try multiple selectors for the close button
         selectors = [
@@ -97,7 +169,7 @@ async def close_log_in_popup(browser: webdriver.Firefox):
 
         for by, selector in selectors:
             try:
-                close_button = WebDriverWait(browser, 3).until(
+                close_button = WebDriverWait(browser, config.BROWSER_POPUP_CLOSE_TIMEOUT).until(
                     expected_conditions.element_to_be_clickable((by, selector))
                 )
                 close_button.click()
@@ -112,13 +184,13 @@ async def close_log_in_popup(browser: webdriver.Firefox):
 
 async def scroll_bottom_page(browser: webdriver.Firefox):
     """Scroll to bottom of page to load all listings."""
-    await asyncio.sleep(2)
+    await asyncio.sleep(config.SLEEP_DELAY)
     try:
         last_height = browser.execute_script("return document.body.scrollHeight")
 
         while True:
             browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            await asyncio.sleep(2)
+            await asyncio.sleep(config.SLEEP_DELAY)
 
             new_height = browser.execute_script("return document.body.scrollHeight")
 
@@ -133,7 +205,7 @@ async def scroll_bottom_page(browser: webdriver.Firefox):
 
 async def click_see_more_description(browser: webdriver.Firefox, first_time=True):
     """Click 'See more' button to expand description."""
-    await asyncio.sleep(2)
+    await asyncio.sleep(config.SLEEP_DELAY)
     try:
         await close_log_in_popup(browser)
     except Exception as exc:
@@ -142,7 +214,9 @@ async def click_see_more_description(browser: webdriver.Firefox, first_time=True
     try:
         see_more_div = browser.find_element(By.XPATH, "//div[@role='button' and contains(., 'See more')]")
         see_more_button = see_more_div.find_element(By.XPATH, ".//span")
-        WebDriverWait(browser, 10).until(expected_conditions.element_to_be_clickable(see_more_button))
+        WebDriverWait(browser, config.BROWSER_SEE_MORE_TIMEOUT).until(
+            expected_conditions.element_to_be_clickable(see_more_button)
+        )
         try:
             see_more_button.click()
         except ElementClickInterceptedException:
@@ -158,7 +232,7 @@ async def click_see_more_description(browser: webdriver.Firefox, first_time=True
                 browser.execute_script(
                     "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", see_more_div
                 )
-                await asyncio.sleep(2)
+                await asyncio.sleep(config.SLEEP_DELAY)
                 await close_log_in_popup(browser)
                 see_more_button = see_more_div.find_element(By.XPATH, ".//span")
                 browser.execute_script("arguments[0].click();", see_more_button)
@@ -280,7 +354,12 @@ async def fill_listings_informations(listings: List[Listing], browser: webdriver
 
         logger.info("Processing listing number: %d / %d", listings.index(listing) + 1, len(listings))
 
-        browser.get(listing.url)
+        try:
+            browser.get(listing.url)
+        except Exception as exc:
+            logger.warning("Timeout loading listing page %s (skipping): %s", listing.url, exc)
+            continue
+
         soup = refresh_html_soup(browser)
 
         listing = fill_listings_general_category(listing, soup)
@@ -310,10 +389,13 @@ def filter_previous_listings(previous_listings: List[Listing], listings: List[Li
 
 async def scrape_marketplace_listings(previous_listings: List[Listing]) -> List[Listing]:
     """Main function to scrape marketplace listings."""
-    browser = open_firefox_to_marketplace_free_items_page()
-    listings: List[Listing] = []
+    check_browser_versions()
 
+    browser = None
+    listings: List[Listing] = []
     try:
+        browser = open_firefox_to_marketplace_free_items_page()
+
         await close_log_in_popup(browser)
         await scroll_bottom_page(browser)
 
@@ -325,6 +407,13 @@ async def scrape_marketplace_listings(previous_listings: List[Listing]) -> List[
         return listings
     except Exception as exc:
         logger.error("An error occurred during scraping: %s", exc)
-        return listings
+        # Check if it's a WebDriver-specific error
+        if "marionette" in str(exc).lower() or "webdriver" in str(exc).lower():
+            logger.error("WebDriver communication error detected. This may indicate a version compatibility issue.")
+        return []
     finally:
-        browser.quit()
+        if browser is not None:
+            try:
+                browser.quit()
+            except Exception as close_exc:
+                logger.warning("Error closing browser: %s", close_exc)
